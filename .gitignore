@@ -1,0 +1,12 @@
+# Build artifacts
+/build/
+/XunFeng_*
+/内网信息收集脚本
+/内网信息收集脚本.exe
+
+# Temporary files
+*.tmp
+
+# Log and result files
+*.txt
+*.log
