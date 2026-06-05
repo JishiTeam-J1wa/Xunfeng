@@ -1,12 +1,29 @@
 # Build artifacts
 /build/
+/xunfeng
+xunfeng_darwin_*
+xunfeng_linux_*
+xunfeng_windows_*
 /XunFeng_*
-/内网信息收集脚本
-/内网信息收集脚本.exe
+/infocollector
 
-# Temporary files
-*.tmp
-
-# Log and result files
+# Report files
 *.txt
 *.log
+*_report.*
+scan_report.*
+
+# macOS
+.DS_Store
+._*
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.codebuddy/
+
+# Temp files
+*.tmp
+*.temp
