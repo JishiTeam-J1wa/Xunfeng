@@ -317,8 +317,30 @@ func printSystemInfo() {
 		}
 	}
 
+	// 系统详细信息
+	for _, line := range getSystemDetails() {
+		consolePrintf("%s %-14s %s", yellow("│"), cyan(""), line)
+	}
+
 	consolePrintf("%s", yellow("└────────────────────────────────────────────┘"))
 	consolePrint("")
+
+	// 提权建议
+	if !isPrivileged() {
+		consolePrintf("%s %s %s", yellow("┌"), white("PRIVILEGE ESCALATION"), yellow("────────────────────────┐"))
+		exploits := getPrivilegeEscalationExploits()
+		if len(exploits) == 0 {
+			consolePrintf("%s %s", yellow("│"), cyan("ℹ 未匹配到已知提权漏洞，建议运行 PEAS 工具进行自动化枚举"))
+		} else {
+			for _, exp := range exploits {
+				consolePrintf("%s %s%s", yellow("│"), red("⚠ "), formatExploitShort(exp))
+				writeLiveLog(fmt.Sprintf("[PRIVESC] %s", formatExploit(exp)))
+			}
+		}
+		consolePrintf("%s %s", yellow("│"), cyan("ℹ 建议运行 winPEAS / Seatbelt / PrivescCheck / linPEAS 进行自动化枚举"))
+		consolePrintf("%s", yellow("└────────────────────────────────────────────┘"))
+		consolePrint("")
+	}
 }
 
 // ==================== 隐匿性 ====================

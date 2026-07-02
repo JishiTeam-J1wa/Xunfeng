@@ -1,6 +1,7 @@
 # Build artifacts
 /build/
 /xunfeng
+/xunfeng.exe
 xunfeng_darwin_*
 xunfeng_linux_*
 xunfeng_windows_*
