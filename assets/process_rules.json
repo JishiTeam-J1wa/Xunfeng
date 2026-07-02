@@ -1,0 +1,3990 @@
+[
+  {
+    "name": "AVG Service",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:avgsvc\\.exe)\\b",
+    "processes": [
+      "avgsvc.exe"
+    ]
+  },
+  {
+    "name": "AVG UI",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:avgui\\.exe)\\b",
+    "processes": [
+      "avgui.exe"
+    ]
+  },
+  {
+    "name": "AhnLab ASD Service",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:asdsvc\\.exe)\\b",
+    "processes": [
+      "asdsvc.exe"
+    ]
+  },
+  {
+    "name": "AhnLab Update Notification",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:alunotify\\.exe)\\b",
+    "processes": [
+      "alunotify.exe"
+    ]
+  },
+  {
+    "name": "AhnLab V3 Endpoint Service",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:v3svc\\.exe)\\b",
+    "processes": [
+      "v3svc.exe"
+    ]
+  },
+  {
+    "name": "AhnLab V3 Service Platform",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:v3sp\\.exe)\\b",
+    "processes": [
+      "v3sp.exe"
+    ]
+  },
+  {
+    "name": "Avast Overseer",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:overseer\\.exe)\\b",
+    "processes": [
+      "overseer.exe"
+    ]
+  },
+  {
+    "name": "Avast Service",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:avastsvc\\.exe)\\b",
+    "processes": [
+      "avastsvc.exe"
+    ]
+  },
+  {
+    "name": "Avast UI",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:avastui\\.exe)\\b",
+    "processes": [
+      "avastui.exe"
+    ]
+  },
+  {
+    "name": "Avast WSC Proxy",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:wsc_proxy\\.exe)\\b",
+    "processes": [
+      "wsc_proxy.exe"
+    ]
+  },
+  {
+    "name": "Avira Desktop Notification",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:avgnt\\.exe)\\b",
+    "processes": [
+      "avgnt.exe"
+    ]
+  },
+  {
+    "name": "Avira Real-Time Protection",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:avguard\\.exe)\\b",
+    "processes": [
+      "avguard.exe"
+    ]
+  },
+  {
+    "name": "Avira Scanner",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:avscan\\.exe)\\b",
+    "processes": [
+      "avscan.exe"
+    ]
+  },
+  {
+    "name": "Avira Shadow Copy Service",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:avshadow\\.exe)\\b",
+    "processes": [
+      "avshadow.exe"
+    ]
+  },
+  {
+    "name": "Bitdefender Agent",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:bdagent\\.exe)\\b",
+    "processes": [
+      "bdagent.exe"
+    ]
+  },
+  {
+    "name": "Bitdefender Service Host",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:bdservicehost\\.exe)\\b",
+    "processes": [
+      "bdservicehost.exe"
+    ]
+  },
+  {
+    "name": "Broadcom Symantec Real-Time Scan",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:rtvscan\\.exe)\\b",
+    "processes": [
+      "rtvscan.exe"
+    ]
+  },
+  {
+    "name": "Comodo AV Scanner Engine",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:cavse\\.exe)\\b",
+    "processes": [
+      "cavse.exe"
+    ]
+  },
+  {
+    "name": "Dr.Web Network Filter",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:dwnetfilter\\.exe)\\b",
+    "processes": [
+      "dwnetfilter.exe"
+    ]
+  },
+  {
+    "name": "Dr.Web Scanner",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:dwscanner\\.exe)\\b",
+    "processes": [
+      "dwscanner.exe"
+    ]
+  },
+  {
+    "name": "Dr.Web Scanning Engine",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:dwengine\\.exe)\\b",
+    "processes": [
+      "dwengine.exe"
+    ]
+  },
+  {
+    "name": "Dr.Web Service",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:dwservice\\.exe)\\b",
+    "processes": [
+      "dwservice.exe"
+    ]
+  },
+  {
+    "name": "Dr.Web SpIDer Agent",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:spideragent\\.exe)\\b",
+    "processes": [
+      "spideragent.exe"
+    ]
+  },
+  {
+    "name": "ESET AMSI Scanner",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:eamsi\\.exe)\\b",
+    "processes": [
+      "eamsi.exe"
+    ]
+  },
+  {
+    "name": "ESET Command Line Scanner",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:ecls\\.exe)\\b",
+    "processes": [
+      "ecls.exe"
+    ]
+  },
+  {
+    "name": "ESET GUI",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:egui\\.exe)\\b",
+    "processes": [
+      "egui.exe"
+    ]
+  },
+  {
+    "name": "ESET Kernel Service",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:ekrn\\.exe)\\b",
+    "processes": [
+      "ekrn.exe"
+    ]
+  },
+  {
+    "name": "ESET Personal Firewall",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:epfw\\.exe)\\b",
+    "processes": [
+      "epfw.exe"
+    ]
+  },
+  {
+    "name": "ESET Security Service",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:essvc\\.exe)\\b",
+    "processes": [
+      "essvc.exe"
+    ]
+  },
+  {
+    "name": "Emsisoft Anti-Malware Service",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:a2service\\.exe)\\b",
+    "processes": [
+      "a2service.exe"
+    ]
+  },
+  {
+    "name": "Emsisoft Anti-Malware UI",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:a2start\\.exe)\\b",
+    "processes": [
+      "a2start.exe"
+    ]
+  },
+  {
+    "name": "Emsisoft Behavior Blocker",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:a2guard\\.exe)\\b",
+    "processes": [
+      "a2guard.exe"
+    ]
+  },
+  {
+    "name": "Fortinet FortiClient AV Monitor",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:fortiavmon\\.exe)\\b",
+    "processes": [
+      "fortiavmon.exe"
+    ]
+  },
+  {
+    "name": "G Data AV Scanner",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:gdscan\\.exe)\\b",
+    "processes": [
+      "gdscan.exe"
+    ]
+  },
+  {
+    "name": "G Data File Server Security",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:gdfsvc\\.exe)\\b",
+    "processes": [
+      "gdfsvc.exe"
+    ]
+  },
+  {
+    "name": "G Data Security Client",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:gdsc\\.exe)\\b",
+    "processes": [
+      "gdsc.exe"
+    ]
+  },
+  {
+    "name": "Kaspersky AV Process Launcher",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:avpexec\\.exe)\\b",
+    "processes": [
+      "avpexec.exe"
+    ]
+  },
+  {
+    "name": "Kaspersky Endpoint Security",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:avp\\.exe)\\b",
+    "processes": [
+      "avp.exe"
+    ]
+  },
+  {
+    "name": "Kaspersky Endpoint Security UI",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:avpui\\.exe)\\b",
+    "processes": [
+      "avpui.exe"
+    ]
+  },
+  {
+    "name": "Kaspersky File Server Security",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:kavfs\\.exe)\\b",
+    "processes": [
+      "kavfs.exe"
+    ]
+  },
+  {
+    "name": "Malwarebytes Agent",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:mbamagent\\.exe)\\b",
+    "processes": [
+      "mbamagent.exe"
+    ]
+  },
+  {
+    "name": "Malwarebytes Anti-Malware",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:mbam\\.exe)\\b",
+    "processes": [
+      "mbam.exe"
+    ]
+  },
+  {
+    "name": "Malwarebytes Anti-Malware Service",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:mbamservice\\.exe)\\b",
+    "processes": [
+      "mbamservice.exe"
+    ]
+  },
+  {
+    "name": "Malwarebytes System Tray",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:mbamtray\\.exe)\\b",
+    "processes": [
+      "mbamtray.exe"
+    ]
+  },
+  {
+    "name": "Microsoft Defender Antimalware",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:msmpeng\\.exe)\\b",
+    "processes": [
+      "msmpeng.exe"
+    ]
+  },
+  {
+    "name": "Microsoft Defender Config Policy",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:configsecuritypolicy\\.exe)\\b",
+    "processes": [
+      "configsecuritypolicy.exe"
+    ]
+  },
+  {
+    "name": "Microsoft Defender Core Service",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:mpdefendercoreservice\\.exe)\\b",
+    "processes": [
+      "mpdefendercoreservice.exe"
+    ]
+  },
+  {
+    "name": "Microsoft Defender NIS",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:nissrv\\.exe)\\b",
+    "processes": [
+      "nissrv.exe"
+    ]
+  },
+  {
+    "name": "Microsoft Security Essentials",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:drwatson\\.exe|emet_agent\\.exe|emet_service\\.exe|mpcmdrun\\.exe|msascui\\.exe|msascuil\\.exe|msmpeng\\.exe|msseces\\.exe|mssecess\\.exe|mssense\\.exe|nissrv\\.exe|securityhealthservice\\.exe)\\b",
+    "processes": [
+      "msseces.exe",
+      "msmpeng.exe",
+      "mssecess.exe",
+      "emet_agent.exe",
+      "emet_service.exe",
+      "drwatson.exe",
+      "mpcmdrun.exe",
+      "nissrv.exe",
+      "mssense.exe",
+      "msascui.exe",
+      "msascuil.exe",
+      "securityhealthservice.exe"
+    ]
+  },
+  {
+    "name": "Microsoft Security Health",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:securityhealthservice\\.exe)\\b",
+    "processes": [
+      "securityhealthservice.exe"
+    ]
+  },
+  {
+    "name": "Microsoft Security Health Tray",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:securityhealthsystray\\.exe)\\b",
+    "processes": [
+      "securityhealthsystray.exe"
+    ]
+  },
+  {
+    "name": "Microsoft System Guard Runtime Broker",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:sgrmbroker\\.exe)\\b",
+    "processes": [
+      "sgrmbroker.exe"
+    ]
+  },
+  {
+    "name": "Norton AntiVirus Auto-Protect",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:navapsvc\\.exe)\\b",
+    "processes": [
+      "navapsvc.exe"
+    ]
+  },
+  {
+    "name": "Norton Security Service",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:ns\\.exe|nsservice\\.exe)\\b",
+    "processes": [
+      "ns.exe",
+      "nsservice.exe"
+    ]
+  },
+  {
+    "name": "Norton Security UI",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:nortonsecurity\\.exe)\\b",
+    "processes": [
+      "nortonsecurity.exe"
+    ]
+  },
+  {
+    "name": "Norton WSC Service",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:nswocsvc\\.exe)\\b",
+    "processes": [
+      "nswocsvc.exe"
+    ]
+  },
+  {
+    "name": "Sophos File Scanner",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:sophosfilescanner\\.exe|sophosfs\\.exe)\\b",
+    "processes": [
+      "sophosfilescanner.exe",
+      "sophosfs.exe"
+    ]
+  },
+  {
+    "name": "Sophos SAV Service",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:savservice\\.exe)\\b",
+    "processes": [
+      "savservice.exe"
+    ]
+  },
+  {
+    "name": "Trellix McAfee On-Access Scanner",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:mcshield\\.exe)\\b",
+    "processes": [
+      "mcshield.exe"
+    ]
+  },
+  {
+    "name": "Trend Micro Ntrtscan",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:tmntsrv\\.exe)\\b",
+    "processes": [
+      "tmntsrv.exe"
+    ]
+  },
+  {
+    "name": "Trend Micro PC-cillin Monitor",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:pccntmon\\.exe)\\b",
+    "processes": [
+      "pccntmon.exe"
+    ]
+  },
+  {
+    "name": "Trend Micro Real-time Scan",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:ntrtscan\\.exe)\\b",
+    "processes": [
+      "ntrtscan.exe"
+    ]
+  },
+  {
+    "name": "VIPRE Anti-Malware Service",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:sbamsvc\\.exe)\\b",
+    "processes": [
+      "sbamsvc.exe"
+    ]
+  },
+  {
+    "name": "VIPRE UI Service",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:sbamuisrv\\.exe)\\b",
+    "processes": [
+      "sbamuisrv.exe"
+    ]
+  },
+  {
+    "name": "Webroot SecureAnywhere",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:wrsa\\.exe)\\b",
+    "processes": [
+      "wrsa.exe"
+    ]
+  },
+  {
+    "name": "WithSecure F-Secure AV",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:fsav32\\.exe)\\b",
+    "processes": [
+      "fsav32.exe"
+    ]
+  },
+  {
+    "name": "WithSecure F-Secure GateKeeper",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:fsgk32\\.exe)\\b",
+    "processes": [
+      "fsgk32.exe"
+    ]
+  },
+  {
+    "name": "Velociraptor Agent",
+    "category": "DFIR",
+    "pattern": "(?i)\\b(?:velociraptor\\.exe)\\b",
+    "processes": [
+      "velociraptor.exe"
+    ]
+  },
+  {
+    "name": "Bitdefender Endpoint Security",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:epsecurityservice\\.exe)\\b",
+    "processes": [
+      "epsecurityservice.exe"
+    ]
+  },
+  {
+    "name": "Bitdefender GravityZone Agent",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:epag\\.exe)\\b",
+    "processes": [
+      "epag.exe"
+    ]
+  },
+  {
+    "name": "Bitdefender Integration Service",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:epintegrationservice\\.exe)\\b",
+    "processes": [
+      "epintegrationservice.exe"
+    ]
+  },
+  {
+    "name": "Bitdefender Protected Service",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:epprotectedservice\\.exe)\\b",
+    "processes": [
+      "epprotectedservice.exe"
+    ]
+  },
+  {
+    "name": "Bitdefender Redline Agent",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:bdredline\\.exe)\\b",
+    "processes": [
+      "bdredline.exe"
+    ]
+  },
+  {
+    "name": "BlackBerry Cylance OPTICS",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:cylanceoptics\\.exe)\\b",
+    "processes": [
+      "cylanceoptics.exe"
+    ]
+  },
+  {
+    "name": "Carbon Black App Control",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:cb\\.exe)\\b",
+    "processes": [
+      "cb.exe"
+    ]
+  },
+  {
+    "name": "Carbon Black Cloud Defense",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:cbdefense\\.exe)\\b",
+    "processes": [
+      "cbdefense.exe"
+    ]
+  },
+  {
+    "name": "Carbon Black Communications",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:cbcomms\\.exe)\\b",
+    "processes": [
+      "cbcomms.exe"
+    ]
+  },
+  {
+    "name": "Carbon Black Defense Service",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:cbdefenseservice\\.exe)\\b",
+    "processes": [
+      "cbdefenseservice.exe"
+    ]
+  },
+  {
+    "name": "Carbon Black Response",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:repux\\.exe)\\b",
+    "processes": [
+      "repux.exe"
+    ]
+  },
+  {
+    "name": "Carbon Black Server",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:repserv\\.exe)\\b",
+    "processes": [
+      "repserv.exe"
+    ]
+  },
+  {
+    "name": "Carbon Black Stream",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:cbstream\\.exe)\\b",
+    "processes": [
+      "cbstream.exe"
+    ]
+  },
+  {
+    "name": "Carbon Black Watchdog",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:repwsc\\.exe)\\b",
+    "processes": [
+      "repwsc.exe"
+    ]
+  },
+  {
+    "name": "Cisco AMP Daemon",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:ampdaemon\\.exe)\\b",
+    "processes": [
+      "ampdaemon.exe"
+    ]
+  },
+  {
+    "name": "Cisco Orbital Agent",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:orbital\\.exe)\\b",
+    "processes": [
+      "orbital.exe"
+    ]
+  },
+  {
+    "name": "Cisco Secure Endpoint Tray",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:iptray\\.exe)\\b",
+    "processes": [
+      "iptray.exe"
+    ]
+  },
+  {
+    "name": "CrowdStrike Falcon",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:csfalconservice\\.exe|csfalconcontainer\\.exe)\\b",
+    "processes": [
+      "csfalconservice.exe",
+      "csfalconcontainer.exe"
+    ]
+  },
+  {
+    "name": "CrowdStrike Falcon Agent",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:csagent\\.exe)\\b",
+    "processes": [
+      "csagent.exe"
+    ]
+  },
+  {
+    "name": "CrowdStrike Falcon Host",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:falconhost\\.exe)\\b",
+    "processes": [
+      "falconhost.exe"
+    ]
+  },
+  {
+    "name": "Cybereason Active Probe",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:activeprobe\\.exe)\\b",
+    "processes": [
+      "activeprobe.exe"
+    ]
+  },
+  {
+    "name": "Cybereason Execution Prevention",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:executionpreventionsvc\\.exe)\\b",
+    "processes": [
+      "executionpreventionsvc.exe"
+    ]
+  },
+  {
+    "name": "Cybereason Minion Host",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:minionhost\\.exe)\\b",
+    "processes": [
+      "minionhost.exe"
+    ]
+  },
+  {
+    "name": "Cybereason Python Minion Host",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:pyminionhost\\.exe)\\b",
+    "processes": [
+      "pyminionhost.exe"
+    ]
+  },
+  {
+    "name": "Cybereason Sensor Service",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:crssvc\\.exe)\\b",
+    "processes": [
+      "crssvc.exe"
+    ]
+  },
+  {
+    "name": "Deep Instinct Agent",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:deepinstinctagent\\.exe)\\b",
+    "processes": [
+      "deepinstinctagent.exe"
+    ]
+  },
+  {
+    "name": "ESET Inspect Agent",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:eei_agent\\.exe)\\b",
+    "processes": [
+      "eei_agent.exe"
+    ]
+  },
+  {
+    "name": "Elastic Elastic Agent",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:elastic\\-agent\\.exe)\\b",
+    "processes": [
+      "elastic-agent.exe"
+    ]
+  },
+  {
+    "name": "Elastic Elastic Endpoint",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:elastic\\-endpoint\\.exe)\\b",
+    "processes": [
+      "elastic-endpoint.exe"
+    ]
+  },
+  {
+    "name": "Fortinet FortiEDR Collector",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:fortiedr\\.exe|forticollector\\.exe)\\b",
+    "processes": [
+      "fortiedr.exe",
+      "forticollector.exe"
+    ]
+  },
+  {
+    "name": "HarfangLab EDR Agent",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:hurukai\\.exe)\\b",
+    "processes": [
+      "hurukai.exe"
+    ]
+  },
+  {
+    "name": "Huntress Agent",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:huntressagent\\.exe)\\b",
+    "processes": [
+      "huntressagent.exe"
+    ]
+  },
+  {
+    "name": "Huntress Updater",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:huntressupdater\\.exe)\\b",
+    "processes": [
+      "huntressupdater.exe"
+    ]
+  },
+  {
+    "name": "LimaCharlie Sensor",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:rphcp\\.exe)\\b",
+    "processes": [
+      "rphcp.exe"
+    ]
+  },
+  {
+    "name": "Microsoft Defender for Endpoint",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:sensecncproxy\\.exe|mssense\\.exe)\\b",
+    "processes": [
+      "sensecncproxy.exe",
+      "mssense.exe"
+    ]
+  },
+  {
+    "name": "Microsoft Defender for Endpoint Sense",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:sense\\.exe)\\b",
+    "processes": [
+      "sense.exe"
+    ]
+  },
+  {
+    "name": "Palo Alto Cortex XDR Cyvera",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:cyveraservice\\.exe)\\b",
+    "processes": [
+      "cyveraservice.exe"
+    ]
+  },
+  {
+    "name": "Palo Alto Cortex XDR Optics",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:cyoptics\\.exe)\\b",
+    "processes": [
+      "cyoptics.exe"
+    ]
+  },
+  {
+    "name": "Palo Alto Cortex XDR Server",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:cyserver\\.exe)\\b",
+    "processes": [
+      "cyserver.exe"
+    ]
+  },
+  {
+    "name": "Palo Alto Cortex XDR Traps",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:traborchestrator\\.exe)\\b",
+    "processes": [
+      "traborchestrator.exe"
+    ]
+  },
+  {
+    "name": "Palo Alto Cortex XDR Traps Daemon",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:trapsd\\.exe)\\b",
+    "processes": [
+      "trapsd.exe"
+    ]
+  },
+  {
+    "name": "Palo Alto Cortex XDR Tray",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:cytray\\.exe)\\b",
+    "processes": [
+      "cytray.exe"
+    ]
+  },
+  {
+    "name": "Palo Alto Traps Agent",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:trapsagent\\.exe)\\b",
+    "processes": [
+      "trapsagent.exe"
+    ]
+  },
+  {
+    "name": "Rapid7 Insight Agent",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:ir_agent\\.exe)\\b",
+    "processes": [
+      "ir_agent.exe"
+    ]
+  },
+  {
+    "name": "SentinelOne Helper",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:sentinelhelper\\.exe)\\b",
+    "processes": [
+      "sentinelhelper.exe"
+    ]
+  },
+  {
+    "name": "SentinelOne Log Collector",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:logcollector\\.exe)\\b",
+    "processes": [
+      "logcollector.exe"
+    ]
+  },
+  {
+    "name": "SentinelOne Memory Scanner",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:sentinelmemoryscanner\\.exe)\\b",
+    "processes": [
+      "sentinelmemoryscanner.exe"
+    ]
+  },
+  {
+    "name": "SentinelOne Service Host",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:sentinelservicehost\\.exe)\\b",
+    "processes": [
+      "sentinelservicehost.exe"
+    ]
+  },
+  {
+    "name": "SentinelOne Singularity",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:sentinelone\\.exe)\\b",
+    "processes": [
+      "sentinelone.exe"
+    ]
+  },
+  {
+    "name": "SentinelOne Singularity Agent",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:sentinelagent\\.exe)\\b",
+    "processes": [
+      "sentinelagent.exe"
+    ]
+  },
+  {
+    "name": "SentinelOne Static Engine",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:sentinelstaticengine\\.exe)\\b",
+    "processes": [
+      "sentinelstaticengine.exe"
+    ]
+  },
+  {
+    "name": "SentinelOne Static Engine Scanner",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:sentinelstaticenginescanner\\.exe)\\b",
+    "processes": [
+      "sentinelstaticenginescanner.exe"
+    ]
+  },
+  {
+    "name": "SentinelOne UI Agent",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:sentineluiagent\\.exe)\\b",
+    "processes": [
+      "sentineluiagent.exe"
+    ]
+  },
+  {
+    "name": "Sophos Intercept X",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:hmpalert\\.exe|sophosinterceptx\\.exe)\\b",
+    "processes": [
+      "hmpalert.exe",
+      "sophosinterceptx.exe"
+    ]
+  },
+  {
+    "name": "Tanium Detect",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:taniumdetect\\.exe)\\b",
+    "processes": [
+      "taniumdetect.exe"
+    ]
+  },
+  {
+    "name": "Tanium Endpoint Index",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:taniumendpointindex\\.exe)\\b",
+    "processes": [
+      "taniumendpointindex.exe"
+    ]
+  },
+  {
+    "name": "Trellix FireEye HX Agent",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:firesvc\\.exe|xagt\\.exe)\\b",
+    "processes": [
+      "firesvc.exe",
+      "xagt.exe"
+    ]
+  },
+  {
+    "name": "Trellix FireEye HX Tray",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:firetray\\.exe)\\b",
+    "processes": [
+      "firetray.exe"
+    ]
+  },
+  {
+    "name": "Trellix McAfee ATP",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:mfeatp\\.exe)\\b",
+    "processes": [
+      "mfeatp.exe"
+    ]
+  },
+  {
+    "name": "Trend Micro Apex One",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:coreserviceshell\\.exe)\\b",
+    "processes": [
+      "coreserviceshell.exe"
+    ]
+  },
+  {
+    "name": "Trend Micro Deep Security Agent",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:ds_agent\\.exe)\\b",
+    "processes": [
+      "ds_agent.exe"
+    ]
+  },
+  {
+    "name": "Trend Micro Vision One Basecamp",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:endpointbasecamp\\.exe)\\b",
+    "processes": [
+      "endpointbasecamp.exe"
+    ]
+  },
+  {
+    "name": "BlackBerry Cylance PROTECT",
+    "category": "EPP",
+    "pattern": "(?i)\\b(?:cylancesvc\\.exe)\\b",
+    "processes": [
+      "cylancesvc.exe"
+    ]
+  },
+  {
+    "name": "BlackBerry Cylance UI",
+    "category": "EPP",
+    "pattern": "(?i)\\b(?:cylanceui\\.exe)\\b",
+    "processes": [
+      "cylanceui.exe"
+    ]
+  },
+  {
+    "name": "Broadcom SEP Master Service",
+    "category": "EPP",
+    "pattern": "(?i)\\b(?:sepmasterservice\\.exe)\\b",
+    "processes": [
+      "sepmasterservice.exe"
+    ]
+  },
+  {
+    "name": "Broadcom SEP WSC Service",
+    "category": "EPP",
+    "pattern": "(?i)\\b(?:sepwscsvc64\\.exe)\\b",
+    "processes": [
+      "sepwscsvc64.exe"
+    ]
+  },
+  {
+    "name": "Broadcom Symantec Endpoint Protection",
+    "category": "EPP",
+    "pattern": "(?i)\\b(?:ccsvchst\\.exe)\\b",
+    "processes": [
+      "ccsvchst.exe"
+    ]
+  },
+  {
+    "name": "Broadcom Symantec Management Client",
+    "category": "EPP",
+    "pattern": "(?i)\\b(?:smcgui\\.exe|smc\\.exe)\\b",
+    "processes": [
+      "smcgui.exe",
+      "smc.exe"
+    ]
+  },
+  {
+    "name": "Broadcom Symantec Network Access Control",
+    "category": "EPP",
+    "pattern": "(?i)\\b(?:snac\\.exe)\\b",
+    "processes": [
+      "snac.exe"
+    ]
+  },
+  {
+    "name": "Check Point Daemon Agent",
+    "category": "EPP",
+    "pattern": "(?i)\\b(?:cpda\\.exe)\\b",
+    "processes": [
+      "cpda.exe"
+    ]
+  },
+  {
+    "name": "Check Point Endpoint Monitor",
+    "category": "EPP",
+    "pattern": "(?i)\\b(?:epmonitor\\.exe)\\b",
+    "processes": [
+      "epmonitor.exe"
+    ]
+  },
+  {
+    "name": "Check Point Endpoint Worker",
+    "category": "EPP",
+    "pattern": "(?i)\\b(?:epmworker\\.exe)\\b",
+    "processes": [
+      "epmworker.exe"
+    ]
+  },
+  {
+    "name": "Check Point Media Encryption",
+    "category": "EPP",
+    "pattern": "(?i)\\b(?:mediapatcher\\.exe)\\b",
+    "processes": [
+      "mediapatcher.exe"
+    ]
+  },
+  {
+    "name": "Check Point Tracker Service",
+    "category": "EPP",
+    "pattern": "(?i)\\b(?:tracsvrcalc\\.exe)\\b",
+    "processes": [
+      "tracsvrcalc.exe"
+    ]
+  },
+  {
+    "name": "Comodo Agent",
+    "category": "EPP",
+    "pattern": "(?i)\\b(?:cmdagent\\.exe)\\b",
+    "processes": [
+      "cmdagent.exe"
+    ]
+  },
+  {
+    "name": "Comodo Internet Security",
+    "category": "EPP",
+    "pattern": "(?i)\\b(?:cis\\.exe)\\b",
+    "processes": [
+      "cis.exe"
+    ]
+  },
+  {
+    "name": "Fortinet FortiClient Agent",
+    "category": "EPP",
+    "pattern": "(?i)\\b(?:fortiagent\\.exe)\\b",
+    "processes": [
+      "fortiagent.exe"
+    ]
+  },
+  {
+    "name": "Fortinet FortiClient Tray",
+    "category": "EPP",
+    "pattern": "(?i)\\b(?:fortitray\\.exe)\\b",
+    "processes": [
+      "fortitray.exe"
+    ]
+  },
+  {
+    "name": "Fortinet FortiClient Web Filter",
+    "category": "EPP",
+    "pattern": "(?i)\\b(?:fortiwf\\.exe)\\b",
+    "processes": [
+      "fortiwf.exe"
+    ]
+  },
+  {
+    "name": "Kaspersky Network Agent",
+    "category": "EPP",
+    "pattern": "(?i)\\b(?:klnagent\\.exe)\\b",
+    "processes": [
+      "klnagent.exe"
+    ]
+  },
+  {
+    "name": "Kaspersky Network Security Agent",
+    "category": "EPP",
+    "pattern": "(?i)\\b(?:klnsacwsvc\\.exe)\\b",
+    "processes": [
+      "klnsacwsvc.exe"
+    ]
+  },
+  {
+    "name": "Malwarebytes Endpoint Protection",
+    "category": "EPP",
+    "pattern": "(?i)\\b(?:epp\\.exe)\\b",
+    "processes": [
+      "epp.exe"
+    ]
+  },
+  {
+    "name": "Sophos Clean Manager",
+    "category": "EPP",
+    "pattern": "(?i)\\b(?:sophoscleanm\\.exe)\\b",
+    "processes": [
+      "sophoscleanm.exe"
+    ]
+  },
+  {
+    "name": "Sophos Health Service",
+    "category": "EPP",
+    "pattern": "(?i)\\b(?:sophoshealth\\.exe)\\b",
+    "processes": [
+      "sophoshealth.exe"
+    ]
+  },
+  {
+    "name": "Sophos Management Agent",
+    "category": "EPP",
+    "pattern": "(?i)\\b(?:sophosagent\\.exe)\\b",
+    "processes": [
+      "sophosagent.exe"
+    ]
+  },
+  {
+    "name": "Sophos Network Threat Protection",
+    "category": "EPP",
+    "pattern": "(?i)\\b(?:sophosntp\\.exe)\\b",
+    "processes": [
+      "sophosntp.exe"
+    ]
+  },
+  {
+    "name": "Sophos Sophos Endpoint",
+    "category": "EPP",
+    "pattern": "(?i)\\b(?:sophossps\\.exe|sspd\\.exe)\\b",
+    "processes": [
+      "sophossps.exe",
+      "sspd.exe"
+    ]
+  },
+  {
+    "name": "Sophos Sophos UI",
+    "category": "EPP",
+    "pattern": "(?i)\\b(?:sophosui\\.exe)\\b",
+    "processes": [
+      "sophosui.exe"
+    ]
+  },
+  {
+    "name": "Sophos Tray App",
+    "category": "EPP",
+    "pattern": "(?i)\\b(?:ssptray\\.exe)\\b",
+    "processes": [
+      "ssptray.exe"
+    ]
+  },
+  {
+    "name": "Tanium Client",
+    "category": "EPP",
+    "pattern": "(?i)\\b(?:taniumclient\\.exe)\\b",
+    "processes": [
+      "taniumclient.exe"
+    ]
+  },
+  {
+    "name": "Trellix McAfee Agent",
+    "category": "EPP",
+    "pattern": "(?i)\\b(?:macmnsvc\\.exe)\\b",
+    "processes": [
+      "macmnsvc.exe"
+    ]
+  },
+  {
+    "name": "Trellix McAfee Agent Control",
+    "category": "EPP",
+    "pattern": "(?i)\\b(?:mfemactl\\.exe)\\b",
+    "processes": [
+      "mfemactl.exe"
+    ]
+  },
+  {
+    "name": "Trellix McAfee Agent Service",
+    "category": "EPP",
+    "pattern": "(?i)\\b(?:masvc\\.exe)\\b",
+    "processes": [
+      "masvc.exe"
+    ]
+  },
+  {
+    "name": "Trellix McAfee Canary Process",
+    "category": "EPP",
+    "pattern": "(?i)\\b(?:mfecanary\\.exe)\\b",
+    "processes": [
+      "mfecanary.exe"
+    ]
+  },
+  {
+    "name": "Trellix McAfee Endpoint Security",
+    "category": "EPP",
+    "pattern": "(?i)\\b(?:mfeesp\\.exe)\\b",
+    "processes": [
+      "mfeesp.exe"
+    ]
+  },
+  {
+    "name": "Trellix McAfee Management Service",
+    "category": "EPP",
+    "pattern": "(?i)\\b(?:mfemms\\.exe)\\b",
+    "processes": [
+      "mfemms.exe"
+    ]
+  },
+  {
+    "name": "Trellix McAfee Threat Prevention",
+    "category": "EPP",
+    "pattern": "(?i)\\b(?:mfetp\\.exe)\\b",
+    "processes": [
+      "mfetp.exe"
+    ]
+  },
+  {
+    "name": "Trellix McAfee Tray",
+    "category": "EPP",
+    "pattern": "(?i)\\b(?:mctray\\.exe)\\b",
+    "processes": [
+      "mctray.exe"
+    ]
+  },
+  {
+    "name": "Trend Micro Client Communication",
+    "category": "EPP",
+    "pattern": "(?i)\\b(?:clientcommunicationservice\\.exe)\\b",
+    "processes": [
+      "clientcommunicationservice.exe"
+    ]
+  },
+  {
+    "name": "Trend Micro Common Client Framework",
+    "category": "EPP",
+    "pattern": "(?i)\\b(?:tmccsf\\.exe)\\b",
+    "processes": [
+      "tmccsf.exe"
+    ]
+  },
+  {
+    "name": "Trend Micro Listener",
+    "category": "EPP",
+    "pattern": "(?i)\\b(?:tmlisten\\.exe)\\b",
+    "processes": [
+      "tmlisten.exe"
+    ]
+  },
+  {
+    "name": "Trend Micro Personal Firewall",
+    "category": "EPP",
+    "pattern": "(?i)\\b(?:personalfirewallservice\\.exe)\\b",
+    "processes": [
+      "personalfirewallservice.exe"
+    ]
+  },
+  {
+    "name": "Trend Micro Unauthorized Change Prevention",
+    "category": "EPP",
+    "pattern": "(?i)\\b(?:tmbmsrv\\.exe)\\b",
+    "processes": [
+      "tmbmsrv.exe"
+    ]
+  },
+  {
+    "name": "Trend Micro Web Reputation Proxy",
+    "category": "EPP",
+    "pattern": "(?i)\\b(?:tmproxy\\.exe)\\b",
+    "processes": [
+      "tmproxy.exe"
+    ]
+  },
+  {
+    "name": "Trend Micro Web Security Client",
+    "category": "EPP",
+    "pattern": "(?i)\\b(?:wscservice\\.exe)\\b",
+    "processes": [
+      "wscservice.exe"
+    ]
+  },
+  {
+    "name": "WatchGuard Panda Endpoint",
+    "category": "EPP",
+    "pattern": "(?i)\\b(?:psanhost\\.exe)\\b",
+    "processes": [
+      "psanhost.exe"
+    ]
+  },
+  {
+    "name": "WatchGuard Panda Endpoint Service",
+    "category": "EPP",
+    "pattern": "(?i)\\b(?:psuaservice\\.exe)\\b",
+    "processes": [
+      "psuaservice.exe"
+    ]
+  },
+  {
+    "name": "Xcitium Endpoint Service",
+    "category": "EPP",
+    "pattern": "(?i)\\b(?:cesvc\\.exe)\\b",
+    "processes": [
+      "cesvc.exe"
+    ]
+  },
+  {
+    "name": "Wazuh Agent",
+    "category": "SIEM-EDR",
+    "pattern": "(?i)\\b(?:wazuh\\-agent\\.exe)\\b",
+    "processes": [
+      "wazuh-agent.exe"
+    ]
+  },
+  {
+    "name": "Wazuh OSSEC Agent",
+    "category": "SIEM-EDR",
+    "pattern": "(?i)\\b(?:ossec\\-agent\\.exe)\\b",
+    "processes": [
+      "ossec-agent.exe"
+    ]
+  },
+  {
+    "name": "Elastic Filebeat",
+    "category": "Telemetry",
+    "pattern": "(?i)\\b(?:filebeat\\.exe)\\b",
+    "processes": [
+      "filebeat.exe"
+    ]
+  },
+  {
+    "name": "Elastic Metricbeat",
+    "category": "Telemetry",
+    "pattern": "(?i)\\b(?:metricbeat\\.exe)\\b",
+    "processes": [
+      "metricbeat.exe"
+    ]
+  },
+  {
+    "name": "Elastic Winlogbeat",
+    "category": "Telemetry",
+    "pattern": "(?i)\\b(?:winlogbeat\\.exe)\\b",
+    "processes": [
+      "winlogbeat.exe"
+    ]
+  },
+  {
+    "name": "Microsoft Sysmon",
+    "category": "Telemetry",
+    "pattern": "(?i)\\b(?:sysmon\\.exe)\\b",
+    "processes": [
+      "sysmon.exe"
+    ]
+  },
+  {
+    "name": "Microsoft Sysmon 64-bit",
+    "category": "Telemetry",
+    "pattern": "(?i)\\b(?:sysmon64\\.exe)\\b",
+    "processes": [
+      "sysmon64.exe"
+    ]
+  },
+  {
+    "name": "Splunk Universal Forwarder",
+    "category": "Telemetry",
+    "pattern": "(?i)\\b(?:splunkd\\.exe)\\b",
+    "processes": [
+      "splunkd.exe"
+    ]
+  },
+  {
+    "name": "Qualys Cloud Agent",
+    "category": "Vuln Scanner",
+    "pattern": "(?i)\\b(?:qualysagent\\.exe)\\b",
+    "processes": [
+      "qualysagent.exe"
+    ]
+  },
+  {
+    "name": "Zscaler Client Connector Service",
+    "category": "ZTNA",
+    "pattern": "(?i)\\b(?:zsaservice\\.exe)\\b",
+    "processes": [
+      "zsaservice.exe"
+    ]
+  },
+  {
+    "name": "Zscaler Client Connector Tray",
+    "category": "ZTNA",
+    "pattern": "(?i)\\b(?:zsatray\\.exe)\\b",
+    "processes": [
+      "zsatray.exe"
+    ]
+  },
+  {
+    "name": "Zscaler Tray Manager",
+    "category": "ZTNA",
+    "pattern": "(?i)\\b(?:zsatraymanager\\.exe)\\b",
+    "processes": [
+      "zsatraymanager.exe"
+    ]
+  },
+  {
+    "name": "Zscaler Tunnel Service",
+    "category": "ZTNA",
+    "pattern": "(?i)\\b(?:zstunnel\\.exe)\\b",
+    "processes": [
+      "zstunnel.exe"
+    ]
+  },
+  {
+    "name": "ALYac",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:ayagent\\.exe|aylaunch\\.exe|ayrtsrv\\.exe|ayupdate2\\.exe)\\b",
+    "processes": [
+      "aylaunch.exe",
+      "ayupdate2.exe",
+      "ayrtsrv.exe",
+      "ayagent.exe"
+    ]
+  },
+  {
+    "name": "AVG",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:avg\\.exe|avgaurd\\.exe|avgemc\\.exe|avgrsx\\.exe|avgserv\\.exe|avgsvc\\.exe|avgui\\.exe|avgw\\.exe|avgwdsvc\\.exe)\\b",
+    "processes": [
+      "avgsvc.exe",
+      "avgui.exe",
+      "avgwdsvc.exe",
+      "avg.exe",
+      "avgaurd.exe",
+      "avgemc.exe",
+      "avgrsx.exe",
+      "avgserv.exe",
+      "avgw.exe"
+    ]
+  },
+  {
+    "name": "Acronis",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:acronis_license_service\\.exe|arsm\\.exe)\\b",
+    "processes": [
+      "arsm.exe",
+      "acronis_license_service.exe"
+    ]
+  },
+  {
+    "name": "Ad-Aware",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:ad\\-aware\\.exe|adaware\\.exe|adawareservice\\.exe)\\b",
+    "processes": [
+      "adawareservice.exe",
+      "ad-aware.exe",
+      "adaware.exe"
+    ]
+  },
+  {
+    "name": "AhnLab-V3",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:patray\\.exe|v3svc\\.exe)\\b",
+    "processes": [
+      "patray.exe",
+      "v3svc.exe"
+    ]
+  },
+  {
+    "name": "Arcabit",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:arcadc\\.exe|arcamainsv\\.exe|arcatasksservice\\.exe|arcavir\\.exe|arcavirmaster\\.exe)\\b",
+    "processes": [
+      "arcavir.exe",
+      "arcadc.exe",
+      "arcavirmaster.exe",
+      "arcamainsv.exe",
+      "arcatasksservice.exe"
+    ]
+  },
+  {
+    "name": "Avast",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:afwserv\\.exe|ashdisp\\.exe|avastbrowser\\.exe|avastsvc\\.exe|avastui\\.exe)\\b",
+    "processes": [
+      "ashdisp.exe",
+      "avastui.exe",
+      "avastsvc.exe",
+      "avastbrowser.exe",
+      "afwserv.exe"
+    ]
+  },
+  {
+    "name": "Avira AntiVirus(小红伞)",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:avcenter\\.exe|avgnt\\.exe|avguard\\.exe|sched\\.exe)\\b",
+    "processes": [
+      "avcenter.exe",
+      "avguard.exe",
+      "avgnt.exe",
+      "sched.exe"
+    ]
+  },
+  {
+    "name": "Baidu AntiVirus",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:baiduansvx\\.exe|baidusd\\.exe|baidusdsvc\\.exe|baidusdtray\\.exe|bddownloader\\.exe)\\b",
+    "processes": [
+      "baidusdsvc.exe",
+      "baidusdtray.exe",
+      "baidusd.exe",
+      "bddownloader.exe",
+      "baiduansvx.exe"
+    ]
+  },
+  {
+    "name": "BitDefender",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:bdagent\\.exe|bdredline\\.exe|bdservicehost\\.exe|bitdefender\\.exe|bitdefendercom\\.exe|secenter\\.exe|vsserv\\.exe)\\b",
+    "processes": [
+      "bdagent.exe",
+      "bitdefendercom.exe",
+      "vsserv.exe",
+      "bdredline.exe",
+      "secenter.exe",
+      "bdservicehost.exe",
+      "bitdefender.exe"
+    ]
+  },
+  {
+    "name": "Bkav",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:bka\\.exe|bkavservice\\.exe|bkavutil\\.exe|blupro\\.exe)\\b",
+    "processes": [
+      "bkavservice.exe",
+      "bka.exe",
+      "bkavutil.exe",
+      "blupro.exe"
+    ]
+  },
+  {
+    "name": "CAT-QuickHeal",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:onlinent\\.exe|quhlpsvc\\.exe|sapissvc\\.exe|scanwscs\\.exe)\\b",
+    "processes": [
+      "quhlpsvc.exe",
+      "onlinent.exe",
+      "sapissvc.exe",
+      "scanwscs.exe"
+    ]
+  },
+  {
+    "name": "CMC",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:cmctrayicon\\.exe)\\b",
+    "processes": [
+      "cmctrayicon.exe"
+    ]
+  },
+  {
+    "name": "ClamAV",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:freshclam\\.exe)\\b",
+    "processes": [
+      "freshclam.exe"
+    ]
+  },
+  {
+    "name": "Comodo",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:cavwp\\.exe|ccavsrv\\.exe|cmdvirth\\.exe|cpf\\.exe)\\b",
+    "processes": [
+      "cpf.exe",
+      "cavwp.exe",
+      "ccavsrv.exe",
+      "cmdvirth.exe"
+    ]
+  },
+  {
+    "name": "CrowdStrike Falcon(猎鹰)",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:csfalconcontainer\\.exe|csfalconservice\\.exe)\\b",
+    "processes": [
+      "csfalconservice.exe",
+      "csfalconcontainer.exe"
+    ]
+  },
+  {
+    "name": "Cybereason",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:cybereasonav\\.exe|cybereasonransomfree\\.exe|cybereasonransomfreeservicehost\\.exe)\\b",
+    "processes": [
+      "cybereasonransomfree.exe",
+      "cybereasonransomfreeservicehost.exe",
+      "cybereasonav.exe"
+    ]
+  },
+  {
+    "name": "Cylance",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:cylancesvc\\.exe)\\b",
+    "processes": [
+      "cylancesvc.exe"
+    ]
+  },
+  {
+    "name": "Cyren",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:vseamps\\.exe|vsedsps\\.exe|vseqrts\\.exe)\\b",
+    "processes": [
+      "vsedsps.exe",
+      "vseamps.exe",
+      "vseqrts.exe"
+    ]
+  },
+  {
+    "name": "DrWeb",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:drweb32w\\.exe|drwebcom\\.exe|drwebscd\\.exe|dwengine\\.exes|spidernt\\.exe)\\b",
+    "processes": [
+      "drwebcom.exe",
+      "spidernt.exe",
+      "drwebscd.exe",
+      "drweb32w.exe",
+      "dwengine.exes"
+    ]
+  },
+  {
+    "name": "Elastic Security",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:agentbeat\\.exe|elastic\\-agent\\.exe|elastic\\-endpoint\\.exe|winlogbeat\\.exe)\\b",
+    "processes": [
+      "elastic-endpoint.exe",
+      "elastic-agent.exe",
+      "agentbeat.exe",
+      "winlogbeat.exe"
+    ]
+  },
+  {
+    "name": "ESET-NOD32",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:ecls\\.exe|egui\\.exe|eguiproxy\\.exe|ekrn\\.exe|eshasrv\\.exe)\\b",
+    "processes": [
+      "egui.exe",
+      "ecls.exe",
+      "ekrn.exe",
+      "eguiproxy.exe",
+      "eshasrv.exe"
+    ]
+  },
+  {
+    "name": "Trend Micro(趋势科技)",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:coreframeworkhost\\.exe|coreserviceshell\\.exe|tmlisten\\.exe|tmpfw\\.exe|uiwatchdog\\.exe)\\b",
+    "processes": [
+      "tmpfw.exe",
+      "tmlisten.exe",
+      "coreserviceshell.exe",
+      "coreframeworkhost.exe",
+      "uiwatchdog.exe",
+      "tmlisten.exe"
+    ]
+  },
+  {
+    "name": "Emsisoft",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:a2free\\.exe|a2guard\\.exe|a2service\\.exe)\\b",
+    "processes": [
+      "a2guard.exe",
+      "a2free.exe",
+      "a2service.exe"
+    ]
+  },
+  {
+    "name": "Endgame",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:endgame\\.exe)\\b",
+    "processes": [
+      "endgame.exe"
+    ]
+  },
+  {
+    "name": "F-Prot",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:f\\-agnt95\\.exe|f\\-prot\\.exe|f\\-prot95\\.exe|f\\-stopw\\.exe|fpavserver\\.exe|fprottray\\.exe)\\b",
+    "processes": [
+      "f-prot.exe",
+      "fprottray.exe",
+      "fpavserver.exe",
+      "f-stopw.exe",
+      "f-prot95.exe",
+      "f-agnt95.exe"
+    ]
+  },
+  {
+    "name": "F-Secure & WithSecure",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:f\\-secure\\.exe|fameh32\\.exe|fch32\\.exe|fih32\\.exe|fnrb32\\.exe|fsav32\\.exe|fsavgui\\.exe|fshoster32\\.exe|fsma32\\.exe|fsmb32\\.exe|fsorsp64\\.exe|fssm32\\.exe|fsulprothoster\\.exe)\\b",
+    "processes": [
+      "f-secure.exe",
+      "fssm32.exe",
+      "fsorsp64.exe",
+      "fsavgui.exe",
+      "fameh32.exe",
+      "fch32.exe",
+      "fih32.exe",
+      "fnrb32.exe",
+      "fsav32.exe",
+      "fsma32.exe",
+      "fsmb32.exe",
+      "fsulprothoster.exe",
+      "fshoster32.exe"
+    ]
+  },
+  {
+    "name": "FireEye(火眼)",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:xagt\\.exe|xagtnotif\\.exe)\\b",
+    "processes": [
+      "xagtnotif.exe",
+      "xagt.exe"
+    ]
+  },
+  {
+    "name": "Trellix EDR(McAfee && 火眼)",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:macmnsvc\\.exe|macompatsvc\\.exe|masvc\\.exe|mcshield\\.exe|mctray\\.exe|mfeatp\\.exe|mfeensppl\\.exe|mfeesp\\.exe|mfefw\\.exe|mfehcs\\.exe|mfemactl\\.exe|mfemms\\.exe|mfetp\\.exe|mfevtps\\.exe|mfewch\\.exe|updaterui\\.exe)\\b",
+    "processes": [
+      "macmnsvc.exe",
+      "macompatsvc.exe",
+      "masvc.exe",
+      "mcshield.exe",
+      "mctray.exe",
+      "mfeatp.exe",
+      "mfeensppl.exe",
+      "mfeesp.exe",
+      "mfefw.exe",
+      "mfehcs.exe",
+      "mfemactl.exe",
+      "mfemms.exe",
+      "mfetp.exe",
+      "mfevtps.exe",
+      "mfewch.exe",
+      "updaterui.exe"
+    ]
+  },
+  {
+    "name": "Fortinet(飞塔)",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:fctsecsvr\\.exe|forticlient\\.exe|fortiesnac\\.exe|fortiproxy\\.exe|fortiscand\\.exe|fortisslvpndaemon\\.exe|fortitcs\\.exe|fortitray\\.exe|fortiwf\\.exe)\\b",
+    "processes": [
+      "forticlient.exe",
+      "fortitray.exe",
+      "fortiscand.exe",
+      "fortiwf.exe",
+      "fortiproxy.exe",
+      "fortiesnac.exe",
+      "fortisslvpndaemon.exe",
+      "fortitcs.exe",
+      "fctsecsvr.exe"
+    ]
+  },
+  {
+    "name": "GData",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:avk\\.exe|avkbackupservice\\.exe|avkcl\\.exe|avkpop\\.exe|avkproxy\\.exe|avkservice\\.exe|avkwctl\\.exe|gdscan\\.exe)\\b",
+    "processes": [
+      "avk.exe",
+      "avkcl.exe",
+      "avkpop.exe",
+      "avkservice.exe",
+      "gdscan.exe",
+      "avkwctl.exe",
+      "avkproxy.exe",
+      "avkbackupservice.exe"
+    ]
+  },
+  {
+    "name": "Ikarus",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:guardxkickoff\\.exe|guardxservice\\.exe)\\b",
+    "processes": [
+      "guardxservice.exe",
+      "guardxkickoff.exe"
+    ]
+  },
+  {
+    "name": "Jiangmin",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:kvfw\\.exe|kvmonxp\\.exe|kvsrvxp\\.exe|kvwsc\\.exe)\\b",
+    "processes": [
+      "kvfw.exe",
+      "kvsrvxp.exe",
+      "kvmonxp.exe",
+      "kvwsc.exe"
+    ]
+  },
+  {
+    "name": "K7AntiVirus",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:k7tsecurity\\.exe|k7tsmain\\.exe|k7tsupdt\\.exe)\\b",
+    "processes": [
+      "k7tsecurity.exe",
+      "k7tsmain.exe",
+      "k7tsupdt.exe"
+    ]
+  },
+  {
+    "name": "Kaspersky(卡巴斯基)",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:avp\\.exe|avpcc\\.exe|avpm\\.exe|kaspersky\\.exe|kavfs\\.exe|kavfswp\\.exe|kavpf\\.exe|kavtray\\.exe|klnagent\\.exe)\\b",
+    "processes": [
+      "avp.exe",
+      "avpcc.exe",
+      "avpm.exe",
+      "kavpf.exe",
+      "kavfs.exe",
+      "klnagent.exe",
+      "kavtray.exe",
+      "kavfswp.exe",
+      "kaspersky.exe"
+    ]
+  },
+  {
+    "name": "Max Secure Software",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:liveupdatesd\\.exe|maxavplusdm\\.exe|maxrcsystemtray\\.exe|rcsystemtray\\.exe|sdsystemtray\\.exe)\\b",
+    "processes": [
+      "sdsystemtray.exe",
+      "maxrcsystemtray.exe",
+      "rcsystemtray.exe",
+      "maxavplusdm.exe",
+      "liveupdatesd.exe"
+    ]
+  },
+  {
+    "name": "Malwarebytes",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:mbam\\.exe|mbamservice\\.exe|mbamtray\\.exe)\\b",
+    "processes": [
+      "mbamservice.exe",
+      "mbam.exe",
+      "mbamtray.exe"
+    ]
+  },
+  {
+    "name": "McAfee(迈克菲-可能为Trellix)",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:alogserv\\.exe|avconsol\\.exe|cmgrdian\\.exe|cpd\\.exe|engineserver\\.exe|fcag\\.exe|fcagate\\.exe|fcags\\.exe|fcagswd\\.exe|firesvc\\.exe|firetray\\.exe|frameworkservice\\.exe|guarddog\\.exe|hipsvc\\.exe|macompatsvc\\.exe|masvc\\.exe|mcafeefire\\.exe|mcamnsvc\\.exe|mcmnhdlr\\.exe|mcshield\\.exe|mctary\\.exe|mctray\\.exe|mcvsrte\\.exe|mcvsshld\\.exe|mfeann\\.exe|mfecanary\\.exe|mfeconsole\\.exe|mfeesp\\.exe|mfefire\\.exe|mfefw\\.exe|mfemms\\.exe|mfetp\\.exe|mfevtps\\.exe|mfewc\\.exe|mfewch\\.exe|mghtml\\.exe|mpfagent\\.exe|mpfservice\\.exe|mpftray\\.exe|naprdmgr\\.exe|shstat\\.exe|tbmon\\.exe|udaterui\\.exe|vshwin32\\.exe|vsstat\\.exe|vstskmgr\\.exe)\\b",
+    "processes": [
+      "mcshield.exe",
+      "tbmon.exe",
+      "frameworkservice.exe",
+      "firesvc.exe",
+      "firetray.exe",
+      "hipsvc.exe",
+      "mfevtps.exe",
+      "mcafeefire.exe",
+      "shstat.exe",
+      "vstskmgr.exe",
+      "engineserver.exe",
+      "alogserv.exe",
+      "avconsol.exe",
+      "cmgrdian.exe",
+      "cpd.exe",
+      "mcmnhdlr.exe",
+      "mcvsshld.exe",
+      "mcvsrte.exe",
+      "mghtml.exe",
+      "mpfservice.exe",
+      "mpfagent.exe",
+      "mpftray.exe",
+      "vshwin32.exe",
+      "vsstat.exe",
+      "guarddog.exe",
+      "mfeann.exe",
+      "udaterui.exe",
+      "naprdmgr.exe",
+      "mctray.exe",
+      "fcagate.exe",
+      "fcag.exe",
+      "fcags.exe",
+      "fcagswd.exe",
+      "macompatsvc.exe",
+      "masvc.exe",
+      "mcamnsvc.exe",
+      "mctary.exe",
+      "mfecanary.exe",
+      "mfeconsole.exe",
+      "mfeesp.exe",
+      "mfefire.exe",
+      "mfefw.exe",
+      "mfemms.exe",
+      "mfetp.exe",
+      "mfewc.exe",
+      "mfewch.exe"
+    ]
+  },
+  {
+    "name": "NANO-Antivirus",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:nanoav\\.exe|nanoav64\\.exe|nanoreport\\.exe|nanoreportc\\.exe|nanoreportc64\\.exe|nanorst\\.exe|nanosvc\\.exe)\\b",
+    "processes": [
+      "nanoav.exe",
+      "nanoav64.exe",
+      "nanoreport.exe",
+      "nanoreportc.exe",
+      "nanoreportc64.exe",
+      "nanorst.exe",
+      "nanosvc.exe"
+    ]
+  },
+  {
+    "name": "Palo Alto Networks",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:paninstaller\\.exe)\\b",
+    "processes": [
+      "paninstaller.exe"
+    ]
+  },
+  {
+    "name": "Panda Security",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:apvxdwin\\.exe|pavproxy\\.exe|pavsched\\.exe|remupd\\.exe)\\b",
+    "processes": [
+      "remupd.exe",
+      "apvxdwin.exe",
+      "pavproxy.exe",
+      "pavsched.exe"
+    ]
+  },
+  {
+    "name": "Qihoo-360",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:360rp\\.exe|360rps\\.exe|360safe\\.exe|360safebox\\.exe|360sd\\.exe|360skylarsvc\\.exe|360tray\\.exe|liveupdate360\\.exe|qhactivedefense\\.exe|zhudongfangyu\\.exe)\\b",
+    "processes": [
+      "360sd.exe",
+      "360tray.exe",
+      "zhudongfangyu.exe",
+      "360rp.exe",
+      "360rps.exe",
+      "360safe.exe",
+      "360safebox.exe",
+      "qhactivedefense.exe",
+      "360skylarsvc.exe",
+      "liveupdate360.exe"
+    ]
+  },
+  {
+    "name": "Rising",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:ravmon\\.exe|ravmond\\.exe|rfwmain\\.exe|rsmgrsvc\\.exe)\\b",
+    "processes": [
+      "ravmond.exe",
+      "rfwmain.exe",
+      "rsmgrsvc.exe",
+      "ravmon.exe"
+    ]
+  },
+  {
+    "name": "SUPERAntiSpyware",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:sabsvc\\.exe|sadblock\\.exe|sascore\\.exe|superantispyware\\.exe)\\b",
+    "processes": [
+      "superantispyware.exe",
+      "sascore.exe",
+      "sadblock.exe",
+      "sabsvc.exe"
+    ]
+  },
+  {
+    "name": "SecureAge APEX",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:clamd\\.exe|everythingserver\\.exe|universalavservice\\.exe)\\b",
+    "processes": [
+      "universalavservice.exe",
+      "everythingserver.exe",
+      "clamd.exe"
+    ]
+  },
+  {
+    "name": "Sophos AV",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:icmon\\.exe|savmain\\.exe|savprogress\\.exe|sophos\\ ui\\.exe|sophoscleanm\\.exe|sophosfilescanner\\.exe|sophosfs\\.exe|sophoshealth\\.exe|sophosntpservice\\.exe|sophososquery\\.exe|sophossafestore64\\.exe|sophosui\\.exe)\\b",
+    "processes": [
+      "savprogress.exe",
+      "icmon.exe",
+      "savmain.exe",
+      "sophosui.exe",
+      "sophosfs.exe",
+      "sophoshealth.exe",
+      "sophossafestore64.exe",
+      "sophoscleanm.exe",
+      "sophosfilescanner.exe",
+      "sophosntpservice.exe",
+      "sophososquery.exe",
+      "sophos ui.exe"
+    ]
+  },
+  {
+    "name": "Tencent",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:qqpcmgr\\.exe|qqpcnetflow\\.exe|qqpcrealtimespeedup\\.exe|qqpcrtp\\.exe|qqpctray\\.exe)\\b",
+    "processes": [
+      "qqpcrtp.exe",
+      "qqpctray.exe",
+      "qqpcmgr.exe",
+      "qqpcnetflow.exe",
+      "qqpcrealtimespeedup.exe"
+    ]
+  },
+  {
+    "name": "TotalDefense",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:amrt\\.exe|prd\\.managementconsole\\.exe|swatchersrv\\.exe)\\b",
+    "processes": [
+      "amrt.exe",
+      "swatchersrv.exe",
+      "prd.managementconsole.exe"
+    ]
+  },
+  {
+    "name": "Trapmine",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:trapminedeployer\\.exe|trapmineenterpriseconfig\\.exe|trapmineenterpriseservice\\.exe|trapmineupgradeservice\\.exe)\\b",
+    "processes": [
+      "trapmineenterpriseservice.exe",
+      "trapmineenterpriseconfig.exe",
+      "trapminedeployer.exe",
+      "trapmineupgradeservice.exe"
+    ]
+  },
+  {
+    "name": "TrendMicro",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:ntrtscan\\.exe|pccntmon\\.exe|pop3trap\\.exe|tmbmsrv\\.exe|webtrap\\.exe)\\b",
+    "processes": [
+      "tmbmsrv.exe",
+      "ntrtscan.exe",
+      "pop3trap.exe",
+      "webtrap.exe",
+      "pccntmon.exe"
+    ]
+  },
+  {
+    "name": "VIPRE",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:sbamsvc\\.exe|sbamtray\\.exe|vipreedgeprotection\\.exe)\\b",
+    "processes": [
+      "sbamsvc.exe",
+      "vipreedgeprotection.exe",
+      "sbamtray.exe"
+    ]
+  },
+  {
+    "name": "ViRobot",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:vrmonnt\\.exe|vrmonsvc\\.exe|vrproxyd\\.exe)\\b",
+    "processes": [
+      "vrmonnt.exe",
+      "vrmonsvc.exe",
+      "vrproxyd.exe"
+    ]
+  },
+  {
+    "name": "Webroot",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:npwebroot\\.exe|spysweeperui\\.exe|wrsa\\.exe)\\b",
+    "processes": [
+      "npwebroot.exe",
+      "wrsa.exe",
+      "spysweeperui.exe"
+    ]
+  },
+  {
+    "name": "Yandex",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:yandesk\\.exe|yandex\\.exe|yandexdisk\\.exe)\\b",
+    "processes": [
+      "yandex.exe",
+      "yandexdisk.exe",
+      "yandesk.exe"
+    ]
+  },
+  {
+    "name": "Zillya",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:zavaux\\.exe|zavcore\\.exe|zillya\\.exe)\\b",
+    "processes": [
+      "zillya.exe",
+      "zavaux.exe",
+      "zavcore.exe"
+    ]
+  },
+  {
+    "name": "ZoneAlarm",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:vsmon\\.exe|zapro\\.exe|zonealarm\\.exe)\\b",
+    "processes": [
+      "vsmon.exe",
+      "zapro.exe",
+      "zonealarm.exe"
+    ]
+  },
+  {
+    "name": "Zoner",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:zpstray\\.exe)\\b",
+    "processes": [
+      "zpstray.exe"
+    ]
+  },
+  {
+    "name": "eGambit",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:dasc\\.exe|dastray\\.exe|memscan64\\.exe)\\b",
+    "processes": [
+      "dasc.exe",
+      "memscan64.exe",
+      "dastray.exe"
+    ]
+  },
+  {
+    "name": "eScan",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:avpmapp\\.exe|consctl\\.exe|mwaser\\.exe)\\b",
+    "processes": [
+      "consctl.exe",
+      "mwaser.exe",
+      "avpmapp.exe"
+    ]
+  },
+  {
+    "name": "Lavasoft",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:aawtray\\.exe|ad\\-watch\\.exe|adawarebp\\.exe|adawaretray\\.exe|lavasofttcpservice\\.exe|webcompanion\\.exe|webcompanioninstaller\\.exe)\\b",
+    "processes": [
+      "aawtray.exe",
+      "lavasofttcpservice.exe",
+      "adawaretray.exe",
+      "webcompanion.exe",
+      "webcompanioninstaller.exe",
+      "adawarebp.exe",
+      "ad-watch.exe"
+    ]
+  },
+  {
+    "name": "The Cleaner",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:cleaner8\\.exe)\\b",
+    "processes": [
+      "cleaner8.exe"
+    ]
+  },
+  {
+    "name": "VBA32",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:vba32lder\\.exe)\\b",
+    "processes": [
+      "vba32lder.exe"
+    ]
+  },
+  {
+    "name": "Mongoosa",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:mongoosagui\\.exe|mongoose\\.exe)\\b",
+    "processes": [
+      "mongoosagui.exe",
+      "mongoose.exe"
+    ]
+  },
+  {
+    "name": "Coranti2012",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:coranticontrolcenter32\\.exe)\\b",
+    "processes": [
+      "coranticontrolcenter32.exe"
+    ]
+  },
+  {
+    "name": "UnThreat",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:unthreat\\.exe|utsvc\\.exe)\\b",
+    "processes": [
+      "unthreat.exe",
+      "utsvc.exe"
+    ]
+  },
+  {
+    "name": "Shield Antivirus",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:cksoftshiedantivirus4\\.exe|shieldtray\\.exe)\\b",
+    "processes": [
+      "cksoftshiedantivirus4.exe",
+      "shieldtray.exe"
+    ]
+  },
+  {
+    "name": "VIRUSfighter",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:avwatchservice\\.exe|vfprotray\\.exe)\\b",
+    "processes": [
+      "avwatchservice.exe",
+      "vfprotray.exe"
+    ]
+  },
+  {
+    "name": "Immunet",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:iptray\\.exe)\\b",
+    "processes": [
+      "iptray.exe"
+    ]
+  },
+  {
+    "name": "PSafe",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:psafecategoryfinder\\.exe|psafesvc\\.exe|psafesystray\\.exe)\\b",
+    "processes": [
+      "psafesystray.exe",
+      "psafecategoryfinder.exe",
+      "psafesvc.exe"
+    ]
+  },
+  {
+    "name": "nProtect",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:npkcmsvc\\.exe|npnj5agent\\.exe|nspupsvc\\.exe)\\b",
+    "processes": [
+      "nspupsvc.exe",
+      "npkcmsvc.exe",
+      "npnj5agent.exe"
+    ]
+  },
+  {
+    "name": "Spyware Terminator",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:spywareterminator\\.exe|spywareterminatorshield\\.exe)\\b",
+    "processes": [
+      "spywareterminatorshield.exe",
+      "spywareterminator.exe"
+    ]
+  },
+  {
+    "name": "Norton(赛门铁克)",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:ccapp\\.exe|ccregvfy\\.exe|ccsvchst\\.exe|iamapp\\.exe|nav\\.exe|navapsvc\\.exe|navapw32\\.exe|nisum\\.exe|nmain\\.exe|nortonsecurity\\.exe|npfmntor\\.exe|nprotect\\.exe|ns\\.exe|rtvscan\\.exe|smcgui\\.exe|vptray\\.exe)\\b",
+    "processes": [
+      "ccsvchst.exe",
+      "rtvscan.exe",
+      "ccapp.exe",
+      "npfmntor.exe",
+      "ccregvfy.exe",
+      "vptray.exe",
+      "iamapp.exe",
+      "nav.exe",
+      "navapw32.exe",
+      "navapsvc.exe",
+      "nisum.exe",
+      "nmain.exe",
+      "nprotect.exe",
+      "smcgui.exe",
+      "ns.exe",
+      "nortonsecurity.exe"
+    ]
+  },
+  {
+    "name": "Norton V25(Avast)",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:afwserv\\.exe|aswengsrv\\.exe|aswidsagent\\.exe|avdump\\.exe|nlltoolssvc\\.exe|nortonsvc\\.exe|wsc_proxy\\.exe)\\b",
+    "processes": [
+      "afwserv.exe",
+      "aswengsrv.exe",
+      "aswidsagent.exe",
+      "avdump.exe",
+      "nlltoolssvc.exe",
+      "nortonsvc.exe",
+      "wsc_proxy.exe"
+    ]
+  },
+  {
+    "name": "Symantec(赛门铁克)",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:ccapp\\.exe|ccevtmgr\\.exe|ccpxysvc\\.exe|ccsetmgr\\.exe|cfgwiz\\.exe|lsetup\\.exe|luall\\.exe|lucomserver\\.exe|sbserv\\.exe|sepwscsvc64\\.exe|smc\\.exe|smcgui\\.exe|snac\\.exe|symcorpui\\.exe|symproxysvc\\.exe|vpc32\\.exe|vptray\\.exe)\\b",
+    "processes": [
+      "ccsetmgr.exe",
+      "ccapp.exe",
+      "vptray.exe",
+      "ccpxysvc.exe",
+      "cfgwiz.exe",
+      "smc.exe",
+      "symproxysvc.exe",
+      "vpc32.exe",
+      "lsetup.exe",
+      "luall.exe",
+      "lucomserver.exe",
+      "sbserv.exe",
+      "ccevtmgr.exe",
+      "smcgui.exe",
+      "snac.exe",
+      "symcorpui.exe",
+      "sepwscsvc64.exe"
+    ]
+  },
+  {
+    "name": "可牛杀毒",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:knsdtray\\.exe)\\b",
+    "processes": [
+      "knsdtray.exe"
+    ]
+  },
+  {
+    "name": "流量矿石",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:miner\\.exe)\\b",
+    "processes": [
+      "miner.exe"
+    ]
+  },
+  {
+    "name": "SafeDog(安全狗)",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:cloudhelper\\.exe|safedog\\.exe|safedogguardcenter\\.exe|safedogserverui\\.exe|safedogsiteapache\\.exe|safedogsiteiis\\.exe|safedogtray\\.exe|safedogupdatecenter\\.exe)\\b",
+    "processes": [
+      "safedog.exe",
+      "safedogguardcenter.exe",
+      "safedogsiteiis.exe",
+      "safedogtray.exe",
+      "safedogserverui.exe",
+      "safedogsiteapache.exe",
+      "cloudhelper.exe",
+      "safedogupdatecenter.exe"
+    ]
+  },
+  {
+    "name": "木马克星",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:iparmor\\.exe|parmor\\.exe)\\b",
+    "processes": [
+      "parmor.exe",
+      "iparmor.exe"
+    ]
+  },
+  {
+    "name": "贝壳云安全",
+    "category": "Firewall/CloudSec",
+    "pattern": "(?i)\\b(?:beikesan\\.exe)\\b",
+    "processes": [
+      "beikesan.exe"
+    ]
+  },
+  {
+    "name": "木马猎手",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:trojanhunter\\.exe)\\b",
+    "processes": [
+      "trojanhunter.exe"
+    ]
+  },
+  {
+    "name": "巨盾网游安全盾",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:gg\\.exe)\\b",
+    "processes": [
+      "gg.exe"
+    ]
+  },
+  {
+    "name": "绿鹰安全精灵",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:adam\\.exe)\\b",
+    "processes": [
+      "adam.exe"
+    ]
+  },
+  {
+    "name": "超级巡警",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:ast\\.exe)\\b",
+    "processes": [
+      "ast.exe"
+    ]
+  },
+  {
+    "name": "墨者安全专家",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:ananwidget\\.exe)\\b",
+    "processes": [
+      "ananwidget.exe"
+    ]
+  },
+  {
+    "name": "风云防火墙",
+    "category": "Firewall/CloudSec",
+    "pattern": "(?i)\\b(?:fyfirewall\\.exe)\\b",
+    "processes": [
+      "fyfirewall.exe"
+    ]
+  },
+  {
+    "name": "微点主动防御",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:mpmon\\.exe)\\b",
+    "processes": [
+      "mpmon.exe"
+    ]
+  },
+  {
+    "name": "天网防火墙",
+    "category": "Firewall/CloudSec",
+    "pattern": "(?i)\\b(?:pfw\\.exe)\\b",
+    "processes": [
+      "pfw.exe"
+    ]
+  },
+  {
+    "name": "D 盾",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:d_manage\\.exe|d_safe_manage\\.exe)\\b",
+    "processes": [
+      "d_safe_manage.exe",
+      "d_manage.exe"
+    ]
+  },
+  {
+    "name": "云锁",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:yunsuo_agent_daemon\\.exe|yunsuo_agent_service\\.exe)\\b",
+    "processes": [
+      "yunsuo_agent_service.exe",
+      "yunsuo_agent_daemon.exe"
+    ]
+  },
+  {
+    "name": "护卫神",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:hws\\.exe|hws_ui\\.exe|hwsd\\.exe|hwshostmaster\\.exe|hwshostpanel\\.exe|hwspanel\\.exe)\\b",
+    "processes": [
+      "hwspanel.exe",
+      "hws_ui.exe",
+      "hws.exe",
+      "hwsd.exe",
+      "hwshostpanel.exe",
+      "hwshostmaster.exe"
+    ]
+  },
+  {
+    "name": "火绒安全",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:hipsdaemon\\.exe|hipslog\\.exe|hipsmain\\.exe|hipstray\\.exe|usysdiag\\.exe|wsctrl\\.exe|wsctrlsvc\\.exe)\\b",
+    "processes": [
+      "hipstray.exe",
+      "wsctrl.exe",
+      "usysdiag.exe",
+      "hipsdaemon.exe",
+      "hipslog.exe",
+      "hipsmain.exe",
+      "wsctrlsvc.exe"
+    ]
+  },
+  {
+    "name": "网络病毒克星",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:webscanx\\.exe)\\b",
+    "processes": [
+      "webscanx.exe"
+    ]
+  },
+  {
+    "name": "SPHINX防火墙",
+    "category": "Firewall/CloudSec",
+    "pattern": "(?i)\\b(?:sphinx\\.exe)\\b",
+    "processes": [
+      "sphinx.exe"
+    ]
+  },
+  {
+    "name": "奇安信天擎",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:qaxengmanager\\.exe|tqclient\\.exe|tqdefender\\.exe|tqtray\\.exe)\\b",
+    "processes": [
+      "tqclient.exe",
+      "tqtray.exe",
+      "qaxengmanager.exe",
+      "tqdefender.exe"
+    ]
+  },
+  {
+    "name": "H+BEDV Datentechnik GmbH",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:avwin\\.exe|avwupsrv\\.exe)\\b",
+    "processes": [
+      "avwin.exe",
+      "avwupsrv.exe"
+    ]
+  },
+  {
+    "name": "IBM ISS Proventia",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:blackd\\.exe|rapapp\\.exe)\\b",
+    "processes": [
+      "blackd.exe",
+      "rapapp.exe"
+    ]
+  },
+  {
+    "name": "eEye Digital Security",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:blink\\.exe|eeyeevnt\\.exe)\\b",
+    "processes": [
+      "eeyeevnt.exe",
+      "blink.exe"
+    ]
+  },
+  {
+    "name": "TamoSoft",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:cv\\.exe|ent\\.exe)\\b",
+    "processes": [
+      "cv.exe",
+      "ent.exe"
+    ]
+  },
+  {
+    "name": "Kerio Personal Firewall",
+    "category": "Firewall/CloudSec",
+    "pattern": "(?i)\\b(?:persfw\\.exe|wrctrl\\.exe)\\b",
+    "processes": [
+      "persfw.exe",
+      "wrctrl.exe"
+    ]
+  },
+  {
+    "name": "Simplysup",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:trjscan\\.exe)\\b",
+    "processes": [
+      "trjscan.exe"
+    ]
+  },
+  {
+    "name": "PC Tools AntiVirus",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:pctav\\.exe|pctsgui\\.exe)\\b",
+    "processes": [
+      "pctav.exe",
+      "pctsgui.exe"
+    ]
+  },
+  {
+    "name": "VirusBuster Professional",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:vbcmserv\\.exe)\\b",
+    "processes": [
+      "vbcmserv.exe"
+    ]
+  },
+  {
+    "name": "ClamWin",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:clamscan\\.exe|clamtray\\.exe)\\b",
+    "processes": [
+      "clamtray.exe",
+      "clamscan.exe"
+    ]
+  },
+  {
+    "name": "安天智甲",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:amediummanager\\.exe|kismain\\.exe|kscan\\.exe|kxetray\\.exe)\\b",
+    "processes": [
+      "kxetray.exe",
+      "kscan.exe",
+      "amediummanager.exe",
+      "kismain.exe"
+    ]
+  },
+  {
+    "name": "CMC Endpoint Security",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:cmccore\\.exe|cmcepagent\\.exe|cmcfmon\\.exe|cmclog\\.exe|cmcnecore\\.exe)\\b",
+    "processes": [
+      "cmcnecore.exe",
+      "cmcepagent.exe",
+      "cmccore.exe",
+      "cmclog.exe",
+      "cmcfmon.exe"
+    ]
+  },
+  {
+    "name": "金山毒霸",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:kislive\\.exe|knewvip\\.exe|ksafesvc\\.exe|ksafetray\\.exe|kscan\\.exe|kupdata\\.exe|kwatch\\.exe|kwsprotect64\\.exe|kxecenter\\.exe|kxemain\\.exe|kxescore\\.exe|kxetray\\.exe)\\b",
+    "processes": [
+      "kxetray.exe",
+      "kxescore.exe",
+      "kupdata.exe",
+      "kwsprotect64.exe",
+      "kislive.exe",
+      "knewvip.exe",
+      "kscan.exe",
+      "kxecenter.exe",
+      "kxemain.exe",
+      "kwatch.exe",
+      "ksafesvc.exe",
+      "ksafetray.exe"
+    ]
+  },
+  {
+    "name": "Agnitum outpost (Outpost Firewall)",
+    "category": "Firewall/CloudSec",
+    "pattern": "(?i)\\b(?:acs\\.exe|outpost\\.exe)\\b",
+    "processes": [
+      "outpost.exe",
+      "acs.exe"
+    ]
+  },
+  {
+    "name": "Cynet",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:cynetar\\.exe|cynetds\\.exe|cyneteps\\.exe|cynetgw\\.exe|cynetlauncher\\.exe|cynetms\\.exe|cynetsd64\\.exe)\\b",
+    "processes": [
+      "cynetlauncher.exe",
+      "cynetds.exe",
+      "cyneteps.exe",
+      "cynetms.exe",
+      "cynetar.exe",
+      "cynetgw.exe",
+      "cynetsd64.exe"
+    ]
+  },
+  {
+    "name": "金山网盾",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:kswebshield\\.exe)\\b",
+    "processes": [
+      "kswebshield.exe"
+    ]
+  },
+  {
+    "name": "G Data安全软件客户端",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:avk\\.exe)\\b",
+    "processes": [
+      "avk.exe"
+    ]
+  },
+  {
+    "name": "金山网镖",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:kpfwtray\\.exe)\\b",
+    "processes": [
+      "kpfwtray.exe"
+    ]
+  },
+  {
+    "name": "在扫1433",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:1433\\.exe)\\b",
+    "processes": [
+      "1433.exe"
+    ]
+  },
+  {
+    "name": "在爆破",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:dub\\.exe)\\b",
+    "processes": [
+      "dub.exe"
+    ]
+  },
+  {
+    "name": "发现S-U",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:servudaemon\\.exe)\\b",
+    "processes": [
+      "servudaemon.exe"
+    ]
+  },
+  {
+    "name": "百度卫士",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:baidusafetray\\.exe|bddownloader\\.exe)\\b",
+    "processes": [
+      "bddownloader.exe",
+      "baidusafetray.exe"
+    ]
+  },
+  {
+    "name": "百度卫士-主进程",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:baiduansvx\\.exe)\\b",
+    "processes": [
+      "baiduansvx.exe"
+    ]
+  },
+  {
+    "name": "已知杀软进程,名称暂未收录",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:_avp32\\.exe|_avpcc\\.exe|_avpm\\.exe|a2cmd\\.exe|aavgapi\\.exe|ackwin32\\.exe|advchk\\.exe|advxdwin\\.exe|agb\\.exe|agentsvr\\.exe|agentw\\.exe|ahprocmonserver\\.exe|airdefense\\.exe|akrnl\\.exe|alertsvc\\.exe|alevir\\.exe|amon\\.exe|amon9x\\.exe|anti\\-trojan\\.exe|antivir\\.exe|antivirus\\.exe|ants\\.exe|apimonitor\\.exe|aplica32\\.exe|armor2net\\.exe|arr\\.exe|ash\\.exeexe\\.exe|ashenhcd\\.exe|ashmaisv\\.exe|ashpopwz\\.exe|ashserv\\.exe|ashsimpl\\.exe|ashskpck\\.exe|ashwebsv\\.exe|aswscan\\.exe|aswupdsv\\.exe|atcon\\.exe|atguard\\.exe|atro55en\\.exe|atupdater\\.exe|atwatch\\.exe|au\\.exe|aupdate\\.exe|auto\\-protect\\.nav80try\\.exe|autodown\\.exe|autotrace\\.exe|autoupdate\\.exe|avciman\\.exe|ave32\\.exe|avengine\\.exe|avesvc\\.exe|aveval\\.exe|avevl32\\.exe|avgam\\.exe|avgcc\\.exe|avgcc32\\.exe|avgchsvx\\.exe|avgcsrvx\\.exe|avgctrl\\.exe|avgfwsrv\\.exe|avgnsx\\.exe|avgntmgr\\.exe|avgserv9\\.exe|avgtray\\.exe|avgupsvc\\.exe|avinitnt\\.exe|avira\\.exe|avkpop\\.exe|avkserv\\.exe|avkservice\\.exe|avltmain\\.exe|avnt\\.exe|avp32\\.exe|avpdos32\\.exe|avptc32\\.exe|avpupd\\.exe|avsched32\\.exe|avserver\\.exe|avsynmgr\\.exe|avwin95\\.exe|avwinnt\\.exe|avwupd\\.exe|avwupd32\\.exe|avxmonitor\\.exe|avxmonitor9x\\.exe|avxmonitornt\\.exe|avxquar\\.exe|avz\\.exe|backweb\\.exe|bargains\\.exe|bd_professional\\.exe|bdswitch\\.exe|beagle\\.exe|belt\\.exe|bidef\\.exe|bidserver\\.exe|bipcp\\.exe|bipcpevalsetup\\.exe|bisp\\.exe|blackice\\.exe|blss\\.exe|bootconf\\.exe|bootwarn\\.exe|borg2\\.exe|bpc\\.exe|brasil\\.exe|bs120\\.exe|bundle\\.exe|bvt\\.exe|cafix\\.exe|cdp\\.exe|cfd\\.exe|cfiadmin\\.exe|cfiaudit\\.exe|cfinet\\.exe|cfinet32\\.exe|cfp\\.exe|cfpconfig\\.exe|clamwin\\.exe|claw95\\.exe|claw95cf\\.exe|clean\\.exe|cleaner\\.exe|cleaner3\\.exe|cleanpc\\.exe|cleanup\\.exe|click\\.exe|cmdagent\\.exe|cmesys\\.exe|cmon016\\.exe|connectionmonitor\\.exe|cpf9x206\\.exe|cpfnt206\\.exe|ctrl\\.exe|cureit\\.exe|cwnb181\\.exe|cwntdwmo\\.exe|datemanager\\.exe|dcomx\\.exe|defalert\\.exe|defenderdaemon\\.exe|defscangui\\.exe|defwatch\\.exe|deputy\\.exe|divx\\.exe|dllcache\\.exe|dllreg\\.exe|doors\\.exe|dpf\\.exe|dpfsetup\\.exe|dpps2\\.exe|drvirus\\.exe|drwadins\\.exe|drweb\\.exe|drweb32\\.exe|drwebupw\\.exe|dssagent\\.exe|dvp95\\.exe|dvp95_0\\.exe|dwebio\\.exe|dwebllio\\.exe|ecengine\\.exe|efpeadm\\.exe|emsw\\.exe|ent\\.exe|esafe\\.exe|escanh95\\.exe|escanhnt\\.exe|escanv95\\.exe|espwatch\\.exe|ethereal\\.exe|etrustcipe\\.exe|evpn\\.exe|ewidoctrl\\.exe|exantivirus\\-cnet\\.exe|exe\\.avxw\\.exe|expert\\.exe|explore\\.exe|ezantivirusregistrationcheck\\.exe|f\\-sched\\.exe|fast\\.exe|filemon\\.exe|findviru\\.exe|firewall\\.exe|fortiscan\\.exe|fp\\-win\\.exe|fp\\-win_trial\\.exe|fprot\\.exe|fpwin\\.exe|frminst\\.exe|frw\\.exe|fsaa\\.exe|fsav\\.exe|fsav530stbyb\\.exe|fsav530wtbyb\\.exe|fsav95\\.exe|fsbwsys\\.exe|fsdfwd\\.exe|fsgk32\\.exe|fsgk32st\\.exe|fsguiexe\\.exe|fsm32\\.exe|fspex\\.exe|gator\\.exe|gbmenu\\.exe|gbpoll\\.exe|gcasdtserv\\.exe|gcasserv\\.exe|generics\\.exe|giantantispyware\\.exe|gmt\\.exe|guard\\.exe|guardgui\\.exe|guardnt\\.exe|hacktracersetup\\.exe|hbinst\\.exe|hbsrv\\.exe|hotactio\\.exe|hotpatch\\.exe|hregmon\\.exe|hrres\\.exe|hsockpe\\.exe|htlog\\.exe|htpatch\\.exe|hupdate\\.exe|hwpe\\.exe|hxdl\\.exe|hxiul\\.exe|iamserv\\.exe|iamstats\\.exe|ibmasn\\.exe|ibmavsp\\.exe|icload95\\.exe|icloadnt\\.exe|icmon\\.exe|icssuppnt\\.exe|icsupp95\\.exe|icsuppnt\\.exe|idle\\.exe|iedll\\.exe|iedriver\\.exe|iface\\.exe|ifw2000\\.exe|inetlnfo\\.exe|inetupd\\.exe|infus\\.exe|infwin\\.exe|init\\.exe|inocit\\.exe|inorpc\\.exe|inort\\.exe|inotask\\.exe|inouptng\\.exe|intdel\\.exe|intren\\.exe|iomon98\\.exe|isafe\\.exe|isatray\\.exe|istsvc\\.exe|jammer\\.exe|jdbgmrg\\.exe|jedi\\.exe|kav\\.exe|kavlite40eng\\.exe|kavmm\\.exe|kavpers40eng\\.exe|kavpfw\\.exe|kavstart\\.exe|kavsvc\\.exe|kavsvcui\\.exe|kazza\\.exe|keenvalue\\.exe|kerio\\-pf\\-213\\-en\\-win\\.exe|kerio\\-wrl\\-421\\-en\\-win\\.exe|kerio\\-wrp\\-421\\-en\\-win\\.exe|kernel32\\.exe|killprocesssetup161\\.exe|kmailmon\\.exe|launcher\\.exe|ldnetmon\\.exe|ldpro\\.exe|ldpromenu\\.exe|ldscan\\.exe|lnetinfo\\.exe|loader\\.exe|localnet\\.exe|lockdown\\.exe|lockdown2000\\.exe|lookout\\.exe|lordpe\\.exe|luau\\.exe|luinit\\.exe|luspt\\.exe|mamutu\\.exe|mapisvc32\\.exe|mcagent\\.exe|mcregwiz\\.exe|mcscript\\.exe|mcscript_inuse\\.exe|mctool\\.exe|mcupdate\\.exe|mfin32\\.exe|mfw2en\\.exe|mfweng3\\.02d30\\.exe|mgavrtcl\\.exe|mgavrte\\.exe|mgui\\.exe|minilog\\.exe|mmod\\.exe|monitor\\.exe|moolive\\.exe|mostat\\.exe|mrflux\\.exe|msapp\\.exe|msbb\\.exe|msblast\\.exe|mscache\\.exe|msccn32\\.exe|mscman\\.exe|msconfig\\.exe|msdm\\.exe|msdos\\.exe|msiexec16\\.exe|msinfo32\\.exe|mslaugh\\.exe|msmgt\\.exe|msmsgri32\\.exe|mssmmc32\\.exe|mssys\\.exe|msvxd\\.exe|mu0311ad\\.exe|mwatch\\.exe|myagtsvc\\.exe|myagttry\\.exe|n32scanw\\.exe|navap\\.exe|navap\\.navapsvc\\.exe|navdx\\.exe|navlu32\\.exe|navnt\\.exe|navstub\\.exe|navw32\\.exe|navwnt\\.exe|nc2000\\.exe|ncinst4\\.exe|ndd32\\.exe|neomonitor\\.exe|neowatchlog\\.exe|neowatchtray\\.exe|netarmor\\.exe|netd32\\.exe|netinfo\\.exe|netmon\\.exe|netscanpro\\.exe|netspyhunter\\-1\\.2\\.exe|netstat\\.exe|netutils\\.exe|nisserv\\.exe|nod32\\.exe|normist\\.exe|norton_internet_secu_3\\.0_407\\.exe|notstart\\.exe|npavtray\\.exe|npf40_tw_98_nt_me_2k\\.exe|npfmessenger\\.exe|npfmsg\\.exe|npscheck\\.exe|npssvc\\.exe|nsched32\\.exe|nsmdtr\\.exe|nssserv\\.exe|nsstray\\.exe|nssys32\\.exe|nstask32\\.exe|nsupdate\\.exe|nt\\.exe|ntos\\.exe|ntvdm\\.exe|ntxconfig\\.exe|nui\\.exe|nupgrade\\.exe|nvarch16\\.exe|nvc95\\.exe|nvcod\\.exe|nvcte\\.exe|nvcut\\.exe|nvsvc32\\.exe|nwinst4\\.exe|nwservice\\.exe|nwtool16\\.exe|ofcpfwsvc\\.exe|ollydbg\\.exe|onsrvr\\.exe|op_mon\\.exe|opssvc\\.exe|optimize\\.exe|ostronet\\.exe|otfix\\.exe|outpostinstall\\.exe|outpostproinstall\\.exe|padmin\\.exe|panixk\\.exe|patch\\.exe|pavcl\\.exe|pavfires\\.exe|pavfnsvr\\.exe|pavkre\\.exe|pavprot\\.exe|pavprsrv\\.exe|pavsrv51\\.exe|pavss\\.exe|pavw\\.exe|pccguide\\.exe|pcciomon\\.exe|pccpfw\\.exe|pcctlcom\\.exe|pccwin98\\.exe|pcfwallicon\\.exe|pcip10117_0\\.exe|pcscan\\.exe|pdsetup\\.exe|periscope\\.exe|perswf\\.exe|pertsk\\.exe|pervac\\.exe|pestpatrol\\.exe|pf2\\.exe|pfwadmin\\.exe|pgmonitr\\.exe|pingscan\\.exe|platin\\.exe|pnmsrv\\.exe|poproxy\\.exe|popscan\\.exe|portdetective\\.exe|portmonitor\\.exe|powerscan\\.exe|ppinupdt\\.exe|pptbc\\.exe|ppvstop\\.exe|prevsrv\\.exe|prevx\\.exe|prizesurfer\\.exe|prmt\\.exe|prmvr\\.exe|procdump\\.exe|processmonitor\\.exe|procexplorerv1\\.0\\.exe|programauditor\\.exe|proport\\.exe|protectx\\.exe|psimsvc\\.exe|pspf\\.exe|purge\\.exe|qconsole\\.exe|qhonline\\.exe|qhonsvc\\.exe|qhset\\.exe|qhwscsvc\\.exe|qserver\\.exe|rav7\\.exe|rav7win\\.exe|rav8win32eng\\.exe|ray\\.exe|rb32\\.exe|rcsync\\.exe|realmon\\.exe|reged\\.exe|regedit\\.exe|regedt32\\.exe|rescue\\.exe|rescue32\\.exe|rrguard\\.exe|rshell\\.exe|rtvscn95\\.exe|rulaunch\\.exe|run32dll\\.exe|rundll\\.exe|rundll16\\.exe|ruxdll32\\.exe|safeweb\\.exe|sahagent\\.exe|sality\\.exe|savadminservice\\.exe|save\\.exe|savenow\\.exe|savscan\\.exe|sc\\.exe|scam32\\.exe|scan32\\.exe|scan95\\.exe|scanningprocess\\.exe|scanpm\\.exe|scrscan\\.exe|sdhelp\\.exe|sdra64\\.exe|serv95\\.exe|setup_flowprotector_us\\.exe|setupvameeval\\.exe|sfc\\.exe|sgssfw32\\.exe|sh\\.exe|shellspyinstall\\.exe|shn\\.exe|showbehind\\.exe|sitecli\\.exe|sms\\.exe|smss32\\.exe|soap\\.exe|sofi\\.exe|spbbcsvc\\.exe|sperm\\.exe|spf\\.exe|spidercpl\\.exe|spiderml\\.exe|spiderui\\.exe|spoler\\.exe|spoolcv\\.exe|spoolsv32\\.exe|spybotsd\\.exe|spyxx\\.exe|srexe\\.exe|srng\\.exe|ss3edit\\.exe|ssg_4104\\.exe|ssgrate\\.exe|st2\\.exe|start\\.exe|stcloader\\.exe|stopsignav\\.exe|supftrl\\.exe|support\\.exe|supporter5\\.exe|svchostc\\.exe|svchosts\\.exe|swagent\\.exe|swdoctor\\.exe|sweep95\\.exe|sweepnet\\.sweepsrv\\.sys\\.swnetsup\\.exe|swnetsup\\.exe|symlcsvc\\.exe|symsport\\.exe|symtray\\.exe|symwsc\\.exe|synmgr\\.exe|sysedit\\.exe|sysupd\\.exe|taskmg\\.exe|taskmo\\.exe|taumon\\.exe|tbscan\\.exe|tc\\.exe|tca\\.exe|tcm\\.exe|tds\\-3\\.exe|tds2\\-98\\.exe|tds2\\-nt\\.exe|teekids\\.exe|tfak\\.exe|tfak5\\.exe|tgbob\\.exe|titanin\\.exe|titaninxp\\.exe|tmntsrv\\.exe|tmproxy\\.exe|tnbutil\\.exe|tracert\\.exe|trickler\\.exe|trjsetup\\.exe|trojan\\.exe|trojantrap3\\.exe|tsadbot\\.exe|tvmd\\.exe|tvtmd\\.exe|undoboot\\.exe|updat\\.exe|update\\.exe|upgrad\\.exe|utpost\\.exe|vba32ecm\\.exe|vba32ifs\\.exe|vba32ldr\\.exe|vba32pp3\\.exe|vbcons\\.exe|vbsntw\\.exe|vbust\\.exe|vbwin9x\\.exe|vbwinntw\\.exe|vcrmon\\.exe|vcsetup\\.exe|vet32\\.exe|vet95\\.exe|vettray\\.exe|vfsetup\\.exe|vir\\-help\\.exe|virusmdpersonalfirewall\\.exe|vnlan300\\.exe|vnpc3000\\.exe|vpc42\\.exe|vpfw30s\\.exe|vrfwsvc\\.exe|vrrw32\\.exe|vscan40\\.exe|vscenu6\\.02d30\\.exe|vsched\\.exe|vsecomr\\.exe|vsisetup\\.exe|vsmain\\.exe|vswin9xe\\.exe|vswinntse\\.exe|vswinperse\\.exe|w32dsm89\\.exe|w9x\\.exe|watchdog\\.exe|webdav\\.exe|wfindv32\\.exe|whoswatchingme\\.exe|wimmun32\\.exe|win\\-bugsfix\\.exe|win32\\.exe|win32us\\.exe|winactive\\.exe|window\\.exe|windows\\.exe|wininetd\\.exe|wininitx\\.exe|winlogin\\.exe|winmain\\.exe|winnet\\.exe|winppr32\\.exe|winrecon\\.exe|winservn\\.exe|winssk32\\.exe|winssnotify\\.exe|winstart\\.exe|winstart001\\.exe|wintsk32\\.exe|winupdate\\.exe|wkufind\\.exe|wnad\\.exe|wnt\\.exe|wradmin\\.exe|wsbgate\\.exe|wupdater\\.exe|wupdt\\.exe|wyvernworksfirewall\\.exe|xcommsvr\\.exe|xpf202en\\.exe|zapsetup3001\\.exe|zatutor\\.exe|zlclient\\.exe|zonalm2601\\.exe)\\b",
+    "processes": [
+      "scan32.exe",
+      "mcscript.exe",
+      "cleanup.exe",
+      "cmdagent.exe",
+      "frminst.exe",
+      "mcscript_inuse.exe",
+      "_avp32.exe",
+      "_avpcc.exe",
+      "_avpm.exe",
+      "aavgapi.exe",
+      "ackwin32.exe",
+      "advxdwin.exe",
+      "agentsvr.exe",
+      "agentw.exe",
+      "alertsvc.exe",
+      "alevir.exe",
+      "amon9x.exe",
+      "anti-trojan.exe",
+      "antivirus.exe",
+      "ants.exe",
+      "apimonitor.exe",
+      "aplica32.exe",
+      "arr.exe",
+      "atcon.exe",
+      "atguard.exe",
+      "atro55en.exe",
+      "atupdater.exe",
+      "atwatch.exe",
+      "au.exe",
+      "aupdate.exe",
+      "auto-protect.nav80try.exe",
+      "autodown.exe",
+      "autotrace.exe",
+      "autoupdate.exe",
+      "ave32.exe",
+      "avgcc32.exe",
+      "avgctrl.exe",
+      "avgserv9.exe",
+      "avkpop.exe",
+      "avkserv.exe",
+      "avkservice.exe",
+      "avltmain.exe",
+      "avnt.exe",
+      "avp32.exe",
+      "avpdos32.exe",
+      "avptc32.exe",
+      "avpupd.exe",
+      "avsched32.exe",
+      "avsynmgr.exe",
+      "avwin95.exe",
+      "avwinnt.exe",
+      "avwupd.exe",
+      "avwupd32.exe",
+      "avxmonitor9x.exe",
+      "avxmonitornt.exe",
+      "avxquar.exe",
+      "backweb.exe",
+      "bargains.exe",
+      "bd_professional.exe",
+      "beagle.exe",
+      "belt.exe",
+      "bidef.exe",
+      "bidserver.exe",
+      "bipcp.exe",
+      "bipcpevalsetup.exe",
+      "bisp.exe",
+      "blackice.exe",
+      "blss.exe",
+      "bootconf.exe",
+      "bootwarn.exe",
+      "borg2.exe",
+      "bpc.exe",
+      "brasil.exe",
+      "bs120.exe",
+      "bundle.exe",
+      "bvt.exe",
+      "cdp.exe",
+      "cfd.exe",
+      "cfiadmin.exe",
+      "cfiaudit.exe",
+      "cfinet.exe",
+      "cfinet32.exe",
+      "claw95.exe",
+      "claw95cf.exe",
+      "clean.exe",
+      "cleaner.exe",
+      "cleaner3.exe",
+      "cleanpc.exe",
+      "click.exe",
+      "cmesys.exe",
+      "cmon016.exe",
+      "connectionmonitor.exe",
+      "cpf9x206.exe",
+      "cpfnt206.exe",
+      "ctrl.exe",
+      "cwnb181.exe",
+      "cwntdwmo.exe",
+      "datemanager.exe",
+      "dcomx.exe",
+      "defalert.exe",
+      "defscangui.exe",
+      "defwatch.exe",
+      "deputy.exe",
+      "divx.exe",
+      "dllcache.exe",
+      "dllreg.exe",
+      "doors.exe",
+      "dpf.exe",
+      "dpfsetup.exe",
+      "dpps2.exe",
+      "drweb32.exe",
+      "drwebupw.exe",
+      "dssagent.exe",
+      "dvp95.exe",
+      "dvp95_0.exe",
+      "ecengine.exe",
+      "efpeadm.exe",
+      "emsw.exe",
+      "ent.exe",
+      "esafe.exe",
+      "escanhnt.exe",
+      "escanv95.exe",
+      "espwatch.exe",
+      "ethereal.exe",
+      "etrustcipe.exe",
+      "evpn.exe",
+      "exantivirus-cnet.exe",
+      "exe.avxw.exe",
+      "expert.exe",
+      "explore.exe",
+      "fast.exe",
+      "findviru.exe",
+      "firewall.exe",
+      "fp-win.exe",
+      "fp-win_trial.exe",
+      "fprot.exe",
+      "frw.exe",
+      "fsaa.exe",
+      "fsav.exe",
+      "fsav530stbyb.exe",
+      "fsav530wtbyb.exe",
+      "fsav95.exe",
+      "fsgk32.exe",
+      "fsm32.exe",
+      "gator.exe",
+      "gbmenu.exe",
+      "gbpoll.exe",
+      "generics.exe",
+      "gmt.exe",
+      "guard.exe",
+      "hacktracersetup.exe",
+      "hbinst.exe",
+      "hbsrv.exe",
+      "hotactio.exe",
+      "hotpatch.exe",
+      "htlog.exe",
+      "htpatch.exe",
+      "hwpe.exe",
+      "hxdl.exe",
+      "hxiul.exe",
+      "iamserv.exe",
+      "iamstats.exe",
+      "ibmasn.exe",
+      "ibmavsp.exe",
+      "icload95.exe",
+      "icloadnt.exe",
+      "icmon.exe",
+      "icsupp95.exe",
+      "icsuppnt.exe",
+      "idle.exe",
+      "iedll.exe",
+      "iedriver.exe",
+      "iface.exe",
+      "ifw2000.exe",
+      "inetlnfo.exe",
+      "infus.exe",
+      "infwin.exe",
+      "init.exe",
+      "intdel.exe",
+      "intren.exe",
+      "iomon98.exe",
+      "istsvc.exe",
+      "jammer.exe",
+      "jdbgmrg.exe",
+      "jedi.exe",
+      "kavlite40eng.exe",
+      "kavpers40eng.exe",
+      "kazza.exe",
+      "keenvalue.exe",
+      "kerio-pf-213-en-win.exe",
+      "kerio-wrl-421-en-win.exe",
+      "kerio-wrp-421-en-win.exe",
+      "kernel32.exe",
+      "killprocesssetup161.exe",
+      "launcher.exe",
+      "ldnetmon.exe",
+      "ldpro.exe",
+      "ldpromenu.exe",
+      "ldscan.exe",
+      "lnetinfo.exe",
+      "loader.exe",
+      "localnet.exe",
+      "lockdown.exe",
+      "lockdown2000.exe",
+      "lookout.exe",
+      "lordpe.exe",
+      "luau.exe",
+      "luinit.exe",
+      "luspt.exe",
+      "mapisvc32.exe",
+      "mcagent.exe",
+      "mctool.exe",
+      "mcupdate.exe",
+      "mfin32.exe",
+      "mfw2en.exe",
+      "mfweng3.02d30.exe",
+      "mgavrtcl.exe",
+      "mgavrte.exe",
+      "mgui.exe",
+      "minilog.exe",
+      "mmod.exe",
+      "monitor.exe",
+      "moolive.exe",
+      "mostat.exe",
+      "mrflux.exe",
+      "msapp.exe",
+      "msbb.exe",
+      "msblast.exe",
+      "mscache.exe",
+      "msccn32.exe",
+      "mscman.exe",
+      "msconfig.exe",
+      "msdm.exe",
+      "msdos.exe",
+      "msiexec16.exe",
+      "msinfo32.exe",
+      "mslaugh.exe",
+      "msmgt.exe",
+      "msmsgri32.exe",
+      "mssmmc32.exe",
+      "mssys.exe",
+      "msvxd.exe",
+      "mu0311ad.exe",
+      "mwatch.exe",
+      "n32scanw.exe",
+      "navap.navapsvc.exe",
+      "navdx.exe",
+      "navlu32.exe",
+      "navnt.exe",
+      "navstub.exe",
+      "navw32.exe",
+      "navwnt.exe",
+      "nc2000.exe",
+      "ncinst4.exe",
+      "ndd32.exe",
+      "neomonitor.exe",
+      "neowatchlog.exe",
+      "netarmor.exe",
+      "netd32.exe",
+      "netinfo.exe",
+      "netmon.exe",
+      "netscanpro.exe",
+      "netspyhunter-1.2.exe",
+      "netstat.exe",
+      "netutils.exe",
+      "nisserv.exe",
+      "nod32.exe",
+      "normist.exe",
+      "norton_internet_secu_3.0_407.exe",
+      "notstart.exe",
+      "npf40_tw_98_nt_me_2k.exe",
+      "npfmessenger.exe",
+      "npscheck.exe",
+      "npssvc.exe",
+      "nsched32.exe",
+      "nssys32.exe",
+      "nstask32.exe",
+      "nsupdate.exe",
+      "nt.exe",
+      "ntvdm.exe",
+      "ntxconfig.exe",
+      "nui.exe",
+      "nupgrade.exe",
+      "nvarch16.exe",
+      "nvc95.exe",
+      "nvsvc32.exe",
+      "nwinst4.exe",
+      "nwservice.exe",
+      "nwtool16.exe",
+      "ollydbg.exe",
+      "onsrvr.exe",
+      "optimize.exe",
+      "ostronet.exe",
+      "otfix.exe",
+      "outpostinstall.exe",
+      "outpostproinstall.exe",
+      "padmin.exe",
+      "panixk.exe",
+      "patch.exe",
+      "pavcl.exe",
+      "pavw.exe",
+      "pccwin98.exe",
+      "pcfwallicon.exe",
+      "pcip10117_0.exe",
+      "pcscan.exe",
+      "pdsetup.exe",
+      "periscope.exe",
+      "perswf.exe",
+      "pf2.exe",
+      "pfwadmin.exe",
+      "pgmonitr.exe",
+      "pingscan.exe",
+      "platin.exe",
+      "poproxy.exe",
+      "popscan.exe",
+      "portdetective.exe",
+      "portmonitor.exe",
+      "powerscan.exe",
+      "ppinupdt.exe",
+      "pptbc.exe",
+      "ppvstop.exe",
+      "prizesurfer.exe",
+      "prmt.exe",
+      "prmvr.exe",
+      "procdump.exe",
+      "processmonitor.exe",
+      "procexplorerv1.0.exe",
+      "programauditor.exe",
+      "proport.exe",
+      "protectx.exe",
+      "pspf.exe",
+      "purge.exe",
+      "qconsole.exe",
+      "qserver.exe",
+      "rav7.exe",
+      "rav7win.exe",
+      "rav8win32eng.exe",
+      "ray.exe",
+      "rb32.exe",
+      "rcsync.exe",
+      "realmon.exe",
+      "reged.exe",
+      "regedit.exe",
+      "regedt32.exe",
+      "rescue.exe",
+      "rescue32.exe",
+      "rrguard.exe",
+      "rshell.exe",
+      "rtvscn95.exe",
+      "rulaunch.exe",
+      "run32dll.exe",
+      "rundll.exe",
+      "rundll16.exe",
+      "ruxdll32.exe",
+      "safeweb.exe",
+      "sahagent.exe",
+      "save.exe",
+      "savenow.exe",
+      "sc.exe",
+      "scam32.exe",
+      "scan95.exe",
+      "scanpm.exe",
+      "scrscan.exe",
+      "serv95.exe",
+      "setup_flowprotector_us.exe",
+      "setupvameeval.exe",
+      "sfc.exe",
+      "sgssfw32.exe",
+      "sh.exe",
+      "shellspyinstall.exe",
+      "shn.exe",
+      "showbehind.exe",
+      "sms.exe",
+      "smss32.exe",
+      "soap.exe",
+      "sofi.exe",
+      "sperm.exe",
+      "spf.exe",
+      "spoler.exe",
+      "spoolcv.exe",
+      "spoolsv32.exe",
+      "spyxx.exe",
+      "srexe.exe",
+      "srng.exe",
+      "ss3edit.exe",
+      "ssg_4104.exe",
+      "ssgrate.exe",
+      "st2.exe",
+      "start.exe",
+      "stcloader.exe",
+      "supftrl.exe",
+      "support.exe",
+      "supporter5.exe",
+      "svchostc.exe",
+      "svchosts.exe",
+      "sweep95.exe",
+      "sweepnet.sweepsrv.sys.swnetsup.exe",
+      "symtray.exe",
+      "sysedit.exe",
+      "sysupd.exe",
+      "taskmg.exe",
+      "taskmo.exe",
+      "taumon.exe",
+      "tbscan.exe",
+      "tc.exe",
+      "tca.exe",
+      "tcm.exe",
+      "tds-3.exe",
+      "tds2-98.exe",
+      "tds2-nt.exe",
+      "teekids.exe",
+      "tfak.exe",
+      "tfak5.exe",
+      "tgbob.exe",
+      "titanin.exe",
+      "titaninxp.exe",
+      "tracert.exe",
+      "trickler.exe",
+      "trjsetup.exe",
+      "trojantrap3.exe",
+      "tsadbot.exe",
+      "tvmd.exe",
+      "tvtmd.exe",
+      "undoboot.exe",
+      "updat.exe",
+      "update.exe",
+      "upgrad.exe",
+      "utpost.exe",
+      "vbcons.exe",
+      "vbust.exe",
+      "vbwin9x.exe",
+      "vbwinntw.exe",
+      "vcsetup.exe",
+      "vet32.exe",
+      "vet95.exe",
+      "vettray.exe",
+      "vfsetup.exe",
+      "vir-help.exe",
+      "virusmdpersonalfirewall.exe",
+      "vnlan300.exe",
+      "vnpc3000.exe",
+      "vpc42.exe",
+      "vpfw30s.exe",
+      "vscan40.exe",
+      "vscenu6.02d30.exe",
+      "vsched.exe",
+      "vsecomr.exe",
+      "vsisetup.exe",
+      "vsmain.exe",
+      "vswin9xe.exe",
+      "vswinntse.exe",
+      "vswinperse.exe",
+      "w32dsm89.exe",
+      "w9x.exe",
+      "watchdog.exe",
+      "webdav.exe",
+      "wfindv32.exe",
+      "whoswatchingme.exe",
+      "wimmun32.exe",
+      "win-bugsfix.exe",
+      "win32.exe",
+      "win32us.exe",
+      "winactive.exe",
+      "window.exe",
+      "windows.exe",
+      "wininetd.exe",
+      "wininitx.exe",
+      "winlogin.exe",
+      "winmain.exe",
+      "winnet.exe",
+      "winppr32.exe",
+      "winrecon.exe",
+      "winservn.exe",
+      "winssk32.exe",
+      "winstart.exe",
+      "winstart001.exe",
+      "wintsk32.exe",
+      "winupdate.exe",
+      "wkufind.exe",
+      "wnad.exe",
+      "wnt.exe",
+      "wradmin.exe",
+      "wsbgate.exe",
+      "wupdater.exe",
+      "wupdt.exe",
+      "wyvernworksfirewall.exe",
+      "xpf202en.exe",
+      "zapsetup3001.exe",
+      "zatutor.exe",
+      "zonalm2601.exe",
+      "a2cmd.exe",
+      "advchk.exe",
+      "agb.exe",
+      "akrnl.exe",
+      "ahprocmonserver.exe",
+      "airdefense.exe",
+      "alertsvc.exe",
+      "avira.exe",
+      "amon.exe",
+      "trojan.exe",
+      "avz.exe",
+      "antivir.exe",
+      "armor2net.exe",
+      "ash.exeexe.exe",
+      "ashenhcd.exe",
+      "ashmaisv.exe",
+      "ashpopwz.exe",
+      "ashserv.exe",
+      "ashsimpl.exe",
+      "ashskpck.exe",
+      "ashwebsv.exe",
+      "aswupdsv.exe",
+      "aswscan.exe",
+      "avciman.exe",
+      "avengine.exe",
+      "avesvc.exe",
+      "aveval.exe",
+      "avevl32.exe",
+      "avgam.exe",
+      "avgcc.exe",
+      "avgchsvx.exe",
+      "avgcsrvx.exe",
+      "avgnsx.exe",
+      "avgcc32.exe",
+      "avgctrl.exe",
+      "avgfwsrv.exe",
+      "avgntmgr.exe",
+      "avgtray.exe",
+      "avgupsvc.exe",
+      "avinitnt.exe",
+      "avkserv.exe",
+      "avkservice.exe",
+      "avp32.exe",
+      "avserver.exe",
+      "avsched32.exe",
+      "avsynmgr.exe",
+      "avwupd32.exe",
+      "avxmonitor.exe",
+      "avxquar.exe",
+      "bdswitch.exe",
+      "blackice.exe",
+      "cafix.exe",
+      "cfp.exe",
+      "cfpconfig.exe",
+      "cfiaudit.exe",
+      "clamwin.exe",
+      "cureit.exe",
+      "defwatch.exe",
+      "drvirus.exe",
+      "drwadins.exe",
+      "drweb.exe",
+      "defenderdaemon.exe",
+      "dwebllio.exe",
+      "dwebio.exe",
+      "escanh95.exe",
+      "escanhnt.exe",
+      "ewidoctrl.exe",
+      "ezantivirusregistrationcheck.exe",
+      "filemon.exe",
+      "firewall.exe",
+      "fortiscan.exe",
+      "fpwin.exe",
+      "fsbwsys.exe",
+      "f-sched.exe",
+      "fsdfwd.exe",
+      "fsgk32.exe",
+      "fsgk32st.exe",
+      "fsguiexe.exe",
+      "fspex.exe",
+      "gcasdtserv.exe",
+      "gcasserv.exe",
+      "giantantispyware.exe",
+      "guardgui.exe",
+      "guardnt.exe",
+      "hregmon.exe",
+      "hrres.exe",
+      "hsockpe.exe",
+      "hupdate.exe",
+      "iamserv.exe",
+      "icload95.exe",
+      "icloadnt.exe",
+      "icmon.exe",
+      "icssuppnt.exe",
+      "icsupp95.exe",
+      "icsuppnt.exe",
+      "inetupd.exe",
+      "inocit.exe",
+      "inorpc.exe",
+      "inort.exe",
+      "inotask.exe",
+      "inouptng.exe",
+      "iomon98.exe",
+      "isafe.exe",
+      "isatray.exe",
+      "kav.exe",
+      "kavmm.exe",
+      "kavpfw.exe",
+      "kavstart.exe",
+      "kavsvc.exe",
+      "kavsvcui.exe",
+      "kmailmon.exe",
+      "mamutu.exe",
+      "mcagent.exe",
+      "mcregwiz.exe",
+      "mcupdate.exe",
+      "minilog.exe",
+      "myagtsvc.exe",
+      "myagttry.exe",
+      "navlu32.exe",
+      "navw32.exe",
+      "neowatchlog.exe",
+      "neowatchtray.exe",
+      "nisserv.exe",
+      "nod32.exe",
+      "normist.exe",
+      "notstart.exe",
+      "npavtray.exe",
+      "npfmsg.exe",
+      "nsched32.exe",
+      "nsmdtr.exe",
+      "nssserv.exe",
+      "nsstray.exe",
+      "ntos.exe",
+      "ntxconfig.exe",
+      "nupgrade.exe",
+      "nvcod.exe",
+      "nvcte.exe",
+      "nvcut.exe",
+      "nwservice.exe",
+      "ofcpfwsvc.exe",
+      "opssvc.exe",
+      "op_mon.exe",
+      "pavfires.exe",
+      "pavfnsvr.exe",
+      "pavkre.exe",
+      "pavprot.exe",
+      "pavprsrv.exe",
+      "pavsrv51.exe",
+      "pavss.exe",
+      "pccguide.exe",
+      "pcciomon.exe",
+      "pccpfw.exe",
+      "pcctlcom.exe",
+      "pertsk.exe",
+      "pervac.exe",
+      "pestpatrol.exe",
+      "pnmsrv.exe",
+      "prevsrv.exe",
+      "prevx.exe",
+      "psimsvc.exe",
+      "qhonline.exe",
+      "qhonsvc.exe",
+      "qhwscsvc.exe",
+      "qhset.exe",
+      "rtvscn95.exe",
+      "sality.exe",
+      "savadminservice.exe",
+      "savscan.exe",
+      "scanningprocess.exe",
+      "sdra64.exe",
+      "sdhelp.exe",
+      "sitecli.exe",
+      "spbbcsvc.exe",
+      "spidercpl.exe",
+      "spiderml.exe",
+      "spiderui.exe",
+      "spybotsd.exe",
+      "spyxx.exe",
+      "ss3edit.exe",
+      "stopsignav.exe",
+      "swagent.exe",
+      "swdoctor.exe",
+      "swnetsup.exe",
+      "symlcsvc.exe",
+      "symsport.exe",
+      "symwsc.exe",
+      "synmgr.exe",
+      "taumon.exe",
+      "tmntsrv.exe",
+      "tmproxy.exe",
+      "tnbutil.exe",
+      "vba32ecm.exe",
+      "vba32ifs.exe",
+      "vba32ldr.exe",
+      "vba32pp3.exe",
+      "vbsntw.exe",
+      "vcrmon.exe",
+      "vrfwsvc.exe",
+      "vrrw32.exe",
+      "vsecomr.exe",
+      "watchdog.exe",
+      "winssnotify.exe",
+      "xcommsvr.exe",
+      "zlclient.exe",
+      "navap.exe",
+      "sahagent.exe"
+    ]
+  },
+  {
+    "name": "G Data文件系统实时监控",
+    "category": "Agent/Monitor",
+    "pattern": "(?i)\\b(?:avkwctl\\.exe|avkwctl9\\.exe)\\b",
+    "processes": [
+      "avkwctl9.exe",
+      "avkwctl.exe"
+    ]
+  },
+  {
+    "name": "Sophos Anti-Virus",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:savmain\\.exe)\\b",
+    "processes": [
+      "savmain.exe"
+    ]
+  },
+  {
+    "name": "360保险箱",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:360safebox\\.exe|safeboxtray\\.exe)\\b",
+    "processes": [
+      "safeboxtray.exe",
+      "360safebox.exe"
+    ]
+  },
+  {
+    "name": "G Data扫描器",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:gdscan\\.exe)\\b",
+    "processes": [
+      "gdscan.exe"
+    ]
+  },
+  {
+    "name": "G Data杀毒代理",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:avkproxy\\.exe)\\b",
+    "processes": [
+      "avkproxy.exe"
+    ]
+  },
+  {
+    "name": "G Data备份服务",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:avkbackupservice\\.exe)\\b",
+    "processes": [
+      "avkbackupservice.exe"
+    ]
+  },
+  {
+    "name": "亚信安全服务器深度安全防护系统",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:notifier\\.exe)\\b",
+    "processes": [
+      "notifier.exe"
+    ]
+  },
+  {
+    "name": "阿里云盾",
+    "category": "Firewall/CloudSec",
+    "pattern": "(?i)\\b(?:aliyun_assist_service\\.exe|aliyundun\\.exe|aliyundunupdate\\.exe)\\b",
+    "processes": [
+      "aliyundun.exe",
+      "aliyundunupdate.exe",
+      "aliyun_assist_service.exe"
+    ]
+  },
+  {
+    "name": "腾讯云安全",
+    "category": "Firewall/CloudSec",
+    "pattern": "(?i)\\b(?:baradagent\\.exe|sgagent\\.exe|ydedr\\.exe|ydlive\\.exe|ydservice\\.exe)\\b",
+    "processes": [
+      "baradagent.exe",
+      "sgagent.exe",
+      "ydservice.exe",
+      "ydlive.exe",
+      "ydedr.exe"
+    ]
+  },
+  {
+    "name": "360主机卫士Web",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:360websafe\\.exe|qhsrv\\.exe|qhwebshellguard\\.exe)\\b",
+    "processes": [
+      "360websafe.exe",
+      "qhsrv.exe",
+      "qhwebshellguard.exe"
+    ]
+  },
+  {
+    "name": "网防G01",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:gov_defence_daemon\\.exe|gov_defence_service\\.exe)\\b",
+    "processes": [
+      "gov_defence_service.exe",
+      "gov_defence_daemon.exe"
+    ]
+  },
+  {
+    "name": "云锁客户端",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:pc\\.exe)\\b",
+    "processes": [
+      "pc.exe"
+    ]
+  },
+  {
+    "name": "Symantec Shared诺顿邮件防火墙软件",
+    "category": "Firewall/CloudSec",
+    "pattern": "(?i)\\b(?:sndsrvc\\.exe)\\b",
+    "processes": [
+      "sndsrvc.exe"
+    ]
+  },
+  {
+    "name": "U盘杀毒专家",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:usbkiller\\.exe)\\b",
+    "processes": [
+      "usbkiller.exe"
+    ]
+  },
+  {
+    "name": "天擎EDRAgent",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:360entclient\\.exe)\\b",
+    "processes": [
+      "360entclient.exe"
+    ]
+  },
+  {
+    "name": "360(奇安信)天擎",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:360entmisc\\.exe)\\b",
+    "processes": [
+      "360entmisc.exe"
+    ]
+  },
+  {
+    "name": "阿里云-云盾",
+    "category": "Firewall/CloudSec",
+    "pattern": "(?i)\\b(?:alisecguard\\.exe)\\b",
+    "processes": [
+      "alisecguard.exe"
+    ]
+  },
+  {
+    "name": "Sophos AutoUpdate Service",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:alsvc\\.exe)\\b",
+    "processes": [
+      "alsvc.exe"
+    ]
+  },
+  {
+    "name": "阿里云监控",
+    "category": "Agent/Monitor",
+    "pattern": "(?i)\\b(?:cmsgoagent\\.windows\\-amd64\\.)\\b",
+    "processes": [
+      "cmsgoagent.windows-amd64."
+    ]
+  },
+  {
+    "name": "深信服EDRAgent",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:edr_agent\\.exe|edr_monitor\\.exe|edr_sec_plan\\.exe)\\b",
+    "processes": [
+      "edr_agent.exe",
+      "edr_monitor.exe",
+      "edr_sec_plan.exe"
+    ]
+  },
+  {
+    "name": "戎码翼龙 NG-EDR",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:rm_hips\\.exe|rm_live\\.exe|rm_service\\.exe|rm_tray\\.exe)\\b",
+    "processes": [
+      "rm_service.exe",
+      "rm_live.exe",
+      "rm_tray.exe",
+      "rm_hips.exe"
+    ]
+  },
+  {
+    "name": "启明星辰天珣EDRAgent",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:esav\\.exe|escc\\.exe|escccontrol\\.exe|esccindex\\.exe)\\b",
+    "processes": [
+      "esav.exe",
+      "escccontrol.exe",
+      "escc.exe",
+      "esccindex.exe"
+    ]
+  },
+  {
+    "name": "蓝鲸Agent",
+    "category": "Agent/Monitor",
+    "pattern": "(?i)\\b(?:gse_win_agent\\.exe|gse_win_daemon\\.exe)\\b",
+    "processes": [
+      "gse_win_agent.exe",
+      "gse_win_daemon.exe"
+    ]
+  },
+  {
+    "name": "联想电脑管家",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:lavservice\\.exe)\\b",
+    "processes": [
+      "lavservice.exe"
+    ]
+  },
+  {
+    "name": "Sophos MCS Agent",
+    "category": "Agent/Monitor",
+    "pattern": "(?i)\\b(?:mcsagent\\.exe)\\b",
+    "processes": [
+      "mcsagent.exe"
+    ]
+  },
+  {
+    "name": "Sophos MCS Client",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:mcsclient\\.exe)\\b",
+    "processes": [
+      "mcsclient.exe"
+    ]
+  },
+  {
+    "name": "360TotalSecurity(360国际版)",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:qhactivedefense\\.exe|qhsafemain\\.exe|qhsafetray\\.exe|qhwatchdog\\.exe)\\b",
+    "processes": [
+      "qhsafemain.exe",
+      "qhsafetray.exe",
+      "qhwatchdog.exe",
+      "qhactivedefense.exe"
+    ]
+  },
+  {
+    "name": "Sophos Device Control Service",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:sdcservice\\.exe)\\b",
+    "processes": [
+      "sdcservice.exe"
+    ]
+  },
+  {
+    "name": "Sophos Endpoint Defense Service",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:sedservice\\.exe)\\b",
+    "processes": [
+      "sedservice.exe"
+    ]
+  },
+  {
+    "name": "Windows Defender SmartScreen",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:smartscreen\\.exe)\\b",
+    "processes": [
+      "smartscreen.exe"
+    ]
+  },
+  {
+    "name": "Windows Defender Advanced Threat Protection",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:mssense\\.exe|sensecncproxy\\.exe|senseir\\.exe|sensendr\\.exe|sensesc\\.exe)\\b",
+    "processes": [
+      "mssense.exe",
+      "sensecncproxy.exe",
+      "senseir.exe",
+      "sensendr.exe",
+      "sensesc.exe"
+    ]
+  },
+  {
+    "name": "Sophos Clean Service",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:sophoscleanm64\\.exe)\\b",
+    "processes": [
+      "sophoscleanm64.exe"
+    ]
+  },
+  {
+    "name": "Sophos FIM",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:sophosfimservice\\.exe)\\b",
+    "processes": [
+      "sophosfimservice.exe"
+    ]
+  },
+  {
+    "name": "Sophos System Protection Service",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:sspservice\\.exe)\\b",
+    "processes": [
+      "sspservice.exe"
+    ]
+  },
+  {
+    "name": "Sophos Web Control Service",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:swc_service\\.exe)\\b",
+    "processes": [
+      "swc_service.exe"
+    ]
+  },
+  {
+    "name": "天眼云镜",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:titanagent\\.exe|titanmonitor\\.exe)\\b",
+    "processes": [
+      "titanagent.exe",
+      "titanmonitor.exe"
+    ]
+  },
+  {
+    "name": "天融信终端防御",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:topsecmain\\.exe|topsectray\\.exe)\\b",
+    "processes": [
+      "topsecmain.exe",
+      "topsectray.exe"
+    ]
+  },
+  {
+    "name": "360杀毒-网盾",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:wdswfsafe\\.exe)\\b",
+    "processes": [
+      "wdswfsafe.exe"
+    ]
+  },
+  {
+    "name": "智量安全",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:wisevector\\.exe|wisevectorsvc\\.exe)\\b",
+    "processes": [
+      "wisevector.exe",
+      "wisevectorsvc.exe"
+    ]
+  },
+  {
+    "name": "天擎",
+    "category": "EDR",
+    "pattern": "(?i)\\b(?:qaxentclient\\.exe|qaxtray\\.exe)\\b",
+    "processes": [
+      "qaxentclient.exe",
+      "qaxtray.exe"
+    ]
+  },
+  {
+    "name": "安恒主机卫士",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:agentservice\\.exe|protectmain\\.exe)\\b",
+    "processes": [
+      "agentservice.exe",
+      "protectmain.exe"
+    ]
+  },
+  {
+    "name": "亚信DS服务端",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:deep\\ security\\ manager\\.exe)\\b",
+    "processes": [
+      "deep security manager.exe"
+    ]
+  },
+  {
+    "name": "亚信DS客户端",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:dsa\\.exe|dsvp\\.exe|uniaccessagent\\.exe)\\b",
+    "processes": [
+      "dsa.exe",
+      "uniaccessagent.exe",
+      "dsvp.exe"
+    ]
+  },
+  {
+    "name": "zabbix agen端",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:zabbix_agentd)\\b",
+    "processes": [
+      "zabbix_agentd"
+    ]
+  },
+  {
+    "name": "阿里系监控",
+    "category": "Agent/Monitor",
+    "pattern": "(?i)\\b(?:alidetect|alihips|alinet|aliscriptengine)\\b",
+    "processes": [
+      "alihips",
+      "alinet",
+      "alidetect",
+      "aliscriptengine"
+    ]
+  },
+  {
+    "name": "腾讯系监控",
+    "category": "Agent/Monitor",
+    "pattern": "(?i)\\b(?:secu\\-tcs\\-agent)\\b",
+    "processes": [
+      "secu-tcs-agent"
+    ]
+  },
+  {
+    "name": "SentinelOne(哨兵一号)",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:sentinelagent\\.exe|sentinelagentworker\\.exe|sentinelmemoryscanner\\.exe|sentinelservicehost\\.exe|sentinelstaticengine\\.exe|sentinelstaticenginescanner\\.exe|sentinelui\\.exe)\\b",
+    "processes": [
+      "sentinelservicehost.exe",
+      "sentinelstaticengine.exe",
+      "sentinelstaticenginescanner.exe",
+      "sentinelmemoryscanner.exe",
+      "sentinelagent.exe",
+      "sentinelagentworker.exe",
+      "sentinelui.exe"
+    ]
+  },
+  {
+    "name": "OneSec(微步)",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:tbagent\\.exe|tbagentsrv\\.exe|tbguard\\.exe)\\b",
+    "processes": [
+      "tbagent.exe",
+      "tbagentsrv.exe",
+      "tbguard.exe"
+    ]
+  },
+  {
+    "name": "亚信安全防毒墙网络版",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:pccnt\\.exe|pccntmon\\.exe|pccntupd\\.exe)\\b",
+    "processes": [
+      "pccnt.exe",
+      "pccntmon.exe",
+      "pccntupd.exe"
+    ]
+  },
+  {
+    "name": "Illumio ZTS",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:venagentmgr\\.exe|venagentmonitor\\.exe|venplatformhandler\\.exe|venvtapserver\\.exe)\\b",
+    "processes": [
+      "venvtapserver.exe",
+      "venplatformhandler.exe",
+      "venagentmonitor.exe",
+      "venagentmgr.exe"
+    ]
+  },
+  {
+    "name": "奇安信统一服务器安全",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:nuboshendpoint\\.exe)\\b",
+    "processes": [
+      "nuboshendpoint.exe"
+    ]
+  },
+  {
+    "name": "IObit Malware Fighter",
+    "category": "Security",
+    "pattern": "(?i)\\b(?:imf\\.exe|imfcore\\.exe|imfsrv\\.exe|imfsrvwsc\\.exe)\\b",
+    "processes": [
+      "imf.exe",
+      "imfcore.exe",
+      "imfsrv.exe",
+      "imfsrvwsc.exe"
+    ]
+  }
+]

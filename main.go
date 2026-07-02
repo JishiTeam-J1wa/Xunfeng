@@ -4,13 +4,14 @@ import (
 	"archive/zip"
 	"bufio"
 	"bytes"
-	"database/sql"
+	"context"
 	"encoding/xml"
 	"flag"
 	"fmt"
 	"io"
 	"math"
 	"math/rand"
+	"net"
 	"os"
 	"os/exec"
 	"os/user"
@@ -22,10 +23,9 @@ import (
 	"sync/atomic"
 	"time"
 	"unicode"
+	"unicode/utf8"
 
 	"github.com/fatih/color"
-	"github.com/karrick/godirwalk"
-	_ "github.com/mattn/go-sqlite3"
 	"github.com/shirou/gopsutil/v3/host"
 	"github.com/shirou/gopsutil/v3/mem"
 	psnet "github.com/shirou/gopsutil/v3/net"
@@ -59,8 +59,21 @@ var (
 	credentialHits uint64
 
 	// 并发
-	fileQueue chan string
+	fileQueue chan fileJob
 	wg        sync.WaitGroup
+)
+
+// 文件任务（携带已计算好的扩展名，避免 worker 重复计算）
+type fileJob struct {
+	path string
+	ext  string
+}
+
+var (
+	// 标准输出缓冲与进度显示锁
+	stdoutWriter = bufio.NewWriter(os.Stdout)
+	stdoutMu     sync.Mutex
+	progressing  atomic.Bool
 
 	// 颜色
 	cyan    = color.New(color.FgCyan).SprintFunc()
@@ -109,10 +122,17 @@ func init() {
 var sensitiveCharMask [256]bool
 
 func initCharMask() {
-	chars := "pPsStTkKaAcCjJmMrRbBeEgG密口账数"
+	chars := "pPsStTkKaAcCjJmMrRbBeEgGhHfFvVnNxXyYuUlLiIoO密口账数"
 	for _, c := range chars {
 		if c < 256 {
 			sensitiveCharMask[byte(c)] = true
+			continue
+		}
+		// 中文字符需要把 UTF-8 每个字节都加入掩码，否则纯中文敏感行会被预筛选直接丢弃
+		var buf [utf8.UTFMax]byte
+		n := utf8.EncodeRune(buf[:], c)
+		for i := 0; i < n; i++ {
+			sensitiveCharMask[buf[i]] = true
 		}
 	}
 }
@@ -267,14 +287,20 @@ func printBanner() {
    ╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═══╝╚═╝     ╚══════╝╚═╝  ╚═══╝ ╚═════╝
                                             %s
 `
-	fmt.Printf(cyan(banner), yellow("v3.0 by J4Team"))
-	fmt.Println()
+	stdoutMu.Lock()
+	fmt.Fprintf(stdoutWriter, cyan(banner), yellow("v3.0 by J4Team"))
+	fmt.Fprintln(stdoutWriter)
+	stdoutWriter.Flush()
+	stdoutMu.Unlock()
 }
 
 func printInfo(format string, args ...interface{}) {
 	msg := fmt.Sprintf(format, args...)
 	if !silent {
-		fmt.Printf("[%s] %s\n", cyan("*"), msg)
+		stdoutMu.Lock()
+		fmt.Fprintf(stdoutWriter, "[%s] %s\n", cyan("*"), msg)
+		stdoutWriter.Flush()
+		stdoutMu.Unlock()
 	}
 	writeOutput("[*] " + msg)
 }
@@ -283,22 +309,114 @@ func printSuccess(format string, args ...interface{}) {
 	msg := fmt.Sprintf(format, args...)
 	atomic.AddUint64(&totalFindings, 1)
 	if !silent {
-		fmt.Printf("[%s] %s\n", green("+"), msg)
+		stdoutMu.Lock()
+		fmt.Fprintf(stdoutWriter, "[%s] %s\n", green("+"), msg)
+		stdoutWriter.Flush()
+		stdoutMu.Unlock()
 	}
 	writeOutput("[+] " + msg)
 }
 
 func printWarning(format string, args ...interface{}) {
 	if !silent {
-		fmt.Printf("[%s] %s\n", yellow("!"), fmt.Sprintf(format, args...))
+		stdoutMu.Lock()
+		fmt.Fprintf(stdoutWriter, "[%s] %s\n", yellow("!"), fmt.Sprintf(format, args...))
+		stdoutWriter.Flush()
+		stdoutMu.Unlock()
 	}
+}
+
+// printFinding 按严重等级输出一条发现（用于新增的可写目录等动态等级结果）
+func printFinding(severity Severity, category, path string, line int, match string) {
+	atomic.AddUint64(&totalFindings, 1)
+	if !silent {
+		stdoutMu.Lock()
+		label := severity.String()
+		colorFn := severity.Color()
+		if line > 0 {
+			fmt.Fprintf(stdoutWriter, "[%s] %-15s %s:%d  %s\n", colorFn(label), category, path, line, match)
+		} else {
+			fmt.Fprintf(stdoutWriter, "[%s] %-15s %s  %s\n", colorFn(label), category, path, match)
+		}
+		stdoutWriter.Flush()
+		stdoutMu.Unlock()
+	}
+	writeOutput(fmt.Sprintf("[%s] %s %s %s", severity.String(), category, path, match))
 }
 
 func printSection(title string) {
 	if !silent {
-		fmt.Printf("\n%s %s %s\n", yellow("━━━━━━━━━━"), white(title), yellow("━━━━━━━━━━"))
+		stdoutMu.Lock()
+		fmt.Fprintf(stdoutWriter, "\n%s %s %s\n", yellow("━━━━━━━━━━"), white(title), yellow("━━━━━━━━━━"))
+		stdoutWriter.Flush()
+		stdoutMu.Unlock()
 	}
 	writeOutput("\n========== " + title + " ==========")
+}
+
+// printSystemInfo 在启动时展示当前环境和权限信息
+func printSystemInfo() {
+	if silent {
+		return
+	}
+
+	usr, _ := user.Current()
+	username := "unknown"
+	if usr != nil {
+		username = usr.Username
+	}
+
+	privilege := "普通用户"
+	if isPrivileged() {
+		privilege = green("管理员/ROOT")
+	} else {
+		privilege = yellow("普通用户")
+	}
+
+	hostname, _ := os.Hostname()
+
+	stdoutMu.Lock()
+	fmt.Fprintln(stdoutWriter)
+	fmt.Fprintf(stdoutWriter, "%s %s %s\n", yellow("┌"), white("SYSTEM INFO"), yellow("───────────────────────────────┐"))
+	fmt.Fprintf(stdoutWriter, "%s %-14s %s\n", yellow("│"), cyan("当前用户:"), username)
+	fmt.Fprintf(stdoutWriter, "%s %-14s %s\n", yellow("│"), cyan("权限级别:"), privilege)
+	fmt.Fprintf(stdoutWriter, "%s %-14s %s\n", yellow("│"), cyan("主机名:"), hostname)
+	fmt.Fprintf(stdoutWriter, "%s %-14s %s\n", yellow("│"), cyan("操作系统:"), runtime.GOOS)
+
+	// 网卡/IP
+	ifaces, err := net.Interfaces()
+	if err == nil {
+		first := true
+		for _, iface := range ifaces {
+			if iface.Flags&net.FlagUp == 0 {
+				continue
+			}
+			addrs, err := iface.Addrs()
+			if err != nil {
+				continue
+			}
+			for _, addr := range addrs {
+				if ipnet, ok := addr.(*net.IPNet); ok {
+					ip := ipnet.IP
+					if ip.IsLoopback() || ip.IsLinkLocalUnicast() {
+						continue
+					}
+					label := cyan("网卡/IP:")
+					if first {
+						first = false
+					} else {
+						label = cyan("            ")
+					}
+					fmt.Fprintf(stdoutWriter, "%s %-14s %s: %s\n", yellow("│"), label, iface.Name, ip.String())
+				}
+			}
+		}
+	}
+
+	fmt.Fprintf(stdoutWriter, "%s\n", yellow("└────────────────────────────────────────────┘"))
+	fmt.Fprintln(stdoutWriter)
+	stdoutWriter.Flush()
+	stdoutMu.Unlock()
 }
 
 // 输出缓冲 (批量写入减少锁竞争)
@@ -332,15 +450,21 @@ func flushOutput() {
 
 func checkSandbox() bool {
 	if runtime.NumCPU() < 2 {
+		printWarning("Sandbox check triggered: CPU count < 2")
 		return true
 	}
 	if v, _ := mem.VirtualMemory(); v != nil && v.Total < 2*1024*1024*1024 {
+		printWarning("Sandbox check triggered: total RAM < 2GB")
 		return true
 	}
-	if uptime, _ := host.Uptime(); uptime > 0 && uptime < 600 {
+	// Windows 真实主机重启后也常出现较短 uptime，阈值从 600s 放宽到 120s，降低误报
+	const minUptime = 120
+	if uptime, _ := host.Uptime(); uptime > 0 && uptime < minUptime {
+		printWarning("Sandbox check triggered: system uptime < %ds", minUptime)
 		return true
 	}
 	if procs, _ := process.Processes(); len(procs) < 30 {
+		printWarning("Sandbox check triggered: process count < 30")
 		return true
 	}
 	return false
@@ -369,36 +493,108 @@ func antiDebug() bool {
 
 func initExclusions() {
 	usr, _ := user.Current()
-	if usr == nil {
-		return
+	home := ""
+	if usr != nil {
+		home = usr.HomeDir
 	}
-	home := usr.HomeDir
 
-	common := []string{
-		filepath.Join(home, "go"), filepath.Join(home, ".go"),
-		filepath.Join(home, "node_modules"), filepath.Join(home, ".npm"),
-		filepath.Join(home, ".nvm"), filepath.Join(home, ".cargo"),
-		filepath.Join(home, ".rustup"), filepath.Join(home, ".local/share"),
+	// 当前用户目录下的常见大目录
+	if home != "" {
+		common := []string{
+			filepath.Join(home, "go"), filepath.Join(home, ".go"),
+			filepath.Join(home, "node_modules"), filepath.Join(home, ".npm"),
+			filepath.Join(home, ".nvm"), filepath.Join(home, ".cargo"),
+			filepath.Join(home, ".rustup"), filepath.Join(home, ".local/share"),
+			filepath.Join(home, ".cache"), filepath.Join(home, "Cache"),
+		}
+		excludedPaths = append(excludedPaths, common...)
 	}
-	excludedPaths = append(excludedPaths, common...)
 
 	switch runtime.GOOS {
 	case "darwin":
 		excludedPaths = append(excludedPaths,
-			filepath.Join(home, "Library"), "/Library", "/System",
-			"/usr/local/Cellar", "/opt/homebrew", "/usr/local/go",
-			"/Applications", "/private/var",
+			"/System", "/Library", "/private",
+			"/usr", "/bin", "/sbin", "/opt", "/var",
+			"/Applications", "/Volumes",
 		)
+		if home != "" {
+			excludedPaths = append(excludedPaths, filepath.Join(home, "Library"))
+		}
 	case "linux":
 		excludedPaths = append(excludedPaths,
-			"/proc", "/sys", "/dev", "/run", "/var/lib", "/var/cache",
-			"/snap", "/usr/lib", "/usr/share",
+			"/proc", "/sys", "/dev", "/run", "/boot", "/var/lib", "/var/cache",
+			"/snap", "/usr", "/lib", "/lib64", "/bin", "/sbin", "/opt",
 		)
 	case "windows":
+		// 低权限下这些目录几乎必然触发访问拒绝，直接排除
+		sysRoot := os.Getenv("SystemRoot")
+		if sysRoot == "" {
+			sysRoot = `C:\Windows`
+		}
 		excludedPaths = append(excludedPaths,
-			"C:\\Windows", "C:\\Program Files", "C:\\Program Files (x86)",
-			filepath.Join(home, "AppData\\Local\\Microsoft"),
+			sysRoot,
+			`C:\Windows\System32`,
+			`C:\Windows\SysWOW64`,
+			`C:\Program Files`, `C:\Program Files (x86)`,
+			`C:\ProgramData`,
+			`C:\$Recycle.Bin`,
+			`C:\Recovery`,
+			`C:\PerfLogs`,
+			`C:\Users\All Users`,
+			`C:\Users\Default`,
+			`C:\Users\Public`,
 		)
+		if home != "" {
+			excludedPaths = append(excludedPaths, filepath.Join(home, "AppData\\Local\\Microsoft"))
+		}
+	}
+
+	// 跨平台：排除其他用户的家目录（低权限下访问会被拒）
+	excludeOtherUserHomes(home)
+}
+
+// excludeOtherUserHomes 排除非当前用户的家目录/用户配置目录
+func excludeOtherUserHomes(currentHome string) {
+	if currentHome == "" {
+		return
+	}
+	switch runtime.GOOS {
+	case "windows":
+		// 排除 C:\Users 下除当前用户以外的目录
+		usersDir := `C:\Users`
+		entries, err := os.ReadDir(usersDir)
+		if err != nil {
+			return
+		}
+		currentUser := strings.ToLower(filepath.Base(currentHome))
+		for _, entry := range entries {
+			if !entry.IsDir() {
+				continue
+			}
+			name := strings.ToLower(entry.Name())
+			if name == currentUser || name == "public" || name == "default" || name == "all users" {
+				continue
+			}
+			excludedPaths = append(excludedPaths, filepath.Join(usersDir, entry.Name()))
+		}
+	case "darwin", "linux":
+		// 排除 /home 和 /Users 下除当前用户以外的目录
+		for _, base := range []string{"/home", "/Users"} {
+			entries, err := os.ReadDir(base)
+			if err != nil {
+				continue
+			}
+			currentUser := filepath.Base(currentHome)
+			for _, entry := range entries {
+				if !entry.IsDir() {
+					continue
+				}
+				if entry.Name() == currentUser {
+					continue
+				}
+				excludedPaths = append(excludedPaths, filepath.Join(base, entry.Name()))
+			}
+		}
 	}
 }
 
@@ -452,8 +648,18 @@ func extractDocText(path string) (string, error) {
 		}
 	}
 
-	// 方法3: 直接从二进制中提取文本字符串
-	return extractStringsFromBinary(path)
+	// 方法3: 从 OLE WordDocument 流提取文本
+	if r, err := newOLEReader(path); err == nil {
+		if stream, err := r.findStream("WordDocument"); err == nil && len(stream) > 0 {
+			var result strings.Builder
+			result.WriteString(extractASCIIStrings(stream, 5))
+			result.WriteByte('\n')
+			result.WriteString(extractUTF16LEStrings(stream, 3))
+			return result.String(), nil
+		}
+	}
+	// 方法4: 退回到原始字节提取
+	return extractOfficeBinaryText(path)
 }
 
 // extractXlsText 从旧版 .xls 文件提取文本
@@ -482,8 +688,38 @@ func extractXlsText(path string) (string, error) {
 		}
 	}
 
-	// 方法3: 直接从二进制中提取文本字符串
-	return extractStringsFromBinary(path)
+	// 方法3: 从 OLE Workbook 流解析 BIFF 提取单元格文本
+	if r, err := newOLEReader(path); err == nil {
+		if stream, err := r.findStream("Workbook"); err == nil && len(stream) > 0 {
+			var result strings.Builder
+			result.WriteString(extractBiffText(stream))
+			result.WriteByte('\n')
+			result.WriteString(extractASCIIStrings(stream, 6))
+			result.WriteByte('\n')
+			result.WriteString(extractUTF16LEStrings(stream, 4))
+			return result.String(), nil
+		}
+	}
+	// 方法4: 退回到原始字节提取
+	return extractOfficeBinaryText(path)
+}
+
+// extractPptText 从旧版 .ppt 文件提取文本
+func extractPptText(path string) (string, error) {
+	// 从 OLE PowerPoint Document 流解析文本记录
+	if r, err := newOLEReader(path); err == nil {
+		if stream, err := r.findStream("PowerPoint Document"); err == nil && len(stream) > 0 {
+			var result strings.Builder
+			result.WriteString(extractASCIIStrings(stream, 5))
+			result.WriteByte('\n')
+			result.WriteString(extractUTF16LEStrings(stream, 3))
+			result.WriteByte('\n')
+			result.WriteString(extractPPTTextRecords(stream))
+			return result.String(), nil
+		}
+	}
+	// 退回到原始字节提取
+	return extractOfficeBinaryText(path)
 }
 
 // extractStringsFromBinary 从二进制文件中提取可打印字符串
@@ -505,9 +741,13 @@ func extractStringsFromBinary(path string) (string, error) {
 	}
 	data = data[:n]
 
+	return extractASCIIStrings(data, 6), nil
+}
+
+// extractASCIIStrings 从字节流中提取可打印 ASCII / UTF-8 字符串
+func extractASCIIStrings(data []byte, minLen int) string {
 	var result strings.Builder
 	var current strings.Builder
-	minLen := 6 // 最小字符串长度
 
 	for _, b := range data {
 		// 可打印 ASCII 或中文字符
@@ -522,9 +762,124 @@ func extractStringsFromBinary(path string) (string, error) {
 		}
 	}
 
-	// 最后一个字符串
 	if current.Len() >= minLen {
 		result.WriteString(current.String())
+	}
+
+	return result.String()
+}
+
+// isPrintableBMP 判断 UTF-16 码点是否为可打印 BMP 字符
+func isPrintableBMP(r rune) bool {
+	// 控制字符跳过
+	if r < 0x20 {
+		return false
+	}
+	// BMP 私有区、代理区、特殊控制区跳过
+	if r >= 0xD800 && r <= 0xDFFF {
+		return false
+	}
+	if r >= 0xE000 && r <= 0xF8FF {
+		return false
+	}
+	if r == 0xFFFE || r == 0xFFFF {
+		return false
+	}
+	return r <= 0xFFFD
+}
+
+// extractUTF16LEStrings 从字节流中提取 UTF-16LE 可打印字符串
+// Office 旧版 .doc/.xls/.ppt 中大量文本以 UTF-16LE 存储
+func extractUTF16LEStrings(data []byte, minLen int) string {
+	var result strings.Builder
+	var current strings.Builder
+
+	for i := 0; i+1 < len(data); i += 2 {
+		low := data[i]
+		high := data[i+1]
+		code := uint16(low) | uint16(high)<<8
+
+		if isPrintableBMP(rune(code)) {
+			current.WriteRune(rune(code))
+		} else {
+			if current.Len() >= minLen {
+				result.WriteString(current.String())
+				result.WriteByte('\n')
+			}
+			current.Reset()
+		}
+	}
+
+	if current.Len() >= minLen {
+		result.WriteString(current.String())
+	}
+
+	return result.String()
+}
+
+// extractPPTTextRecords 解析 PPT 二进制文件中的 TextCharsAtom(0x0FA0)/TextBytesAtom(0x0FA1)
+func extractPPTTextRecords(data []byte) string {
+	const (
+		textCharsAtom  = 0x0FA0
+		textBytesAtom  = 0x0FA1
+	)
+	var result strings.Builder
+
+	// 遍历可能的记录头：RecordHeader = 2 bytes ver/instance + 2 bytes type + 4 bytes length
+	for i := 0; i+8 <= len(data); i++ {
+		recType := uint16(data[i+2]) | uint16(data[i+3])<<8
+		recLen := uint32(data[i+4]) | uint32(data[i+5])<<8 | uint32(data[i+6])<<16 | uint32(data[i+7])<<24
+		if recLen > 64*1024 || recLen == 0 {
+			continue
+		}
+		end := i + 8 + int(recLen)
+		if end > len(data) {
+			continue
+		}
+
+		payload := data[i+8 : end]
+		switch recType {
+		case textCharsAtom:
+			// UTF-16LE 文本
+			result.WriteString(extractUTF16LEStrings(payload, 2))
+		case textBytesAtom:
+			// ASCII 文本
+			result.WriteString(extractASCIIStrings(payload, 3))
+		}
+	}
+
+	return result.String()
+}
+
+// extractOfficeBinaryText 综合提取 Office 二进制文件中的文本
+// .doc/.xls/.ppt 等旧格式含有大量 UTF-16LE 字符串
+func extractOfficeBinaryText(path string) (string, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return "", err
+	}
+	defer file.Close()
+
+	data := make([]byte, 8*1024*1024) // 最多 8MB
+	n, err := file.Read(data)
+	if err != nil && err != io.EOF {
+		return "", err
+	}
+	if n == 0 {
+		return "", nil
+	}
+	data = data[:n]
+
+	var result strings.Builder
+	result.Grow(n / 8)
+	result.WriteString(extractASCIIStrings(data, 5))
+	result.WriteByte('\n')
+	result.WriteString(extractUTF16LEStrings(data, 3))
+
+	// PPT 专门解析文本记录
+	if len(data) > 8 && data[0] == 0xD0 && data[1] == 0xCF && data[2] == 0x11 && data[3] == 0xE0 {
+		result.WriteByte('\n')
+		result.WriteString(extractPPTTextRecords(data))
 	}
 
 	return result.String(), nil
@@ -678,8 +1033,51 @@ func extractXMLText(data []byte) string {
 func discoverFiles(roots []string, stealthMs int) {
 	rand.Shuffle(len(roots), func(i, j int) { roots[i], roots[j] = roots[j], roots[i] })
 
-	// 预计算扩展名集合 (减少 map 查找)
-	scanExts := make(map[string]struct{}, 100)
+	scanExts := buildScanExts()
+
+	// 按根目录并发遍历：filepath.WalkDir 单线程效率很高，多个根/驱动器并行可提升整体吞吐
+	var wg sync.WaitGroup
+	for _, root := range roots {
+		wg.Add(1)
+		go func(r string) {
+			defer wg.Done()
+			filepath.WalkDir(r, func(path string, d os.DirEntry, err error) error {
+				// 无权限/特殊文件节点直接跳过，避免 Windows 下偶发错误导致扫描中断
+				if err != nil {
+					return nil
+				}
+
+				if stealthMs > 0 {
+					time.Sleep(time.Duration(stealthMs+rand.Intn(stealthMs/2+1)) * time.Millisecond)
+				}
+
+				name := d.Name()
+
+				if d.IsDir() {
+					if _, skip := excludedDirs[name]; skip {
+						return filepath.SkipDir
+					}
+					if isExcludedPath(path) {
+						return filepath.SkipDir
+					}
+					return nil
+				}
+
+				if isExcludedPath(path) {
+					return nil
+				}
+
+				atomic.AddUint64(&scannedFiles, 1)
+				processFileEntry(path, name, scanExts)
+				return nil
+			})
+		}(root)
+	}
+	wg.Wait()
+}
+
+func buildScanExts() map[string]struct{} {
+	scanExts := make(map[string]struct{}, 120)
 	for ext := range targetExtensions {
 		scanExts[ext] = struct{}{}
 	}
@@ -692,93 +1090,77 @@ func discoverFiles(roots []string, stealthMs int) {
 	for ext := range scanOnlyExtensions {
 		scanExts[ext] = struct{}{}
 	}
+	return scanExts
+}
 
-	for _, root := range roots {
-		godirwalk.Walk(root, &godirwalk.Options{
-			Unsorted:            true,
-			FollowSymbolicLinks: false,
-			Callback: func(path string, de *godirwalk.Dirent) error {
-				if stealthMs > 0 {
-					time.Sleep(time.Duration(stealthMs+rand.Intn(stealthMs/2+1)) * time.Millisecond)
-				}
+func isExcludedPath(path string) bool {
+	for _, prefix := range excludedPaths {
+		if strings.HasPrefix(path, prefix) {
+			return true
+		}
+	}
+	return false
+}
 
-				name := de.Name()
+func processFileEntry(path, name string, scanExts map[string]struct{}) {
+	nameLower := toLowerASCII(name)
 
-				if de.IsDir() {
-					// 快速目录过滤
-					if _, skip := excludedDirs[name]; skip {
-						return godirwalk.SkipThis
-					}
-					for _, prefix := range excludedPaths {
-						if strings.HasPrefix(path, prefix) {
-							return godirwalk.SkipThis
-						}
-					}
-					return nil
-				}
+	// 快速获取扩展名
+	ext := ""
+	for i := len(name) - 1; i >= 0; i-- {
+		if name[i] == '.' {
+			ext = toLowerASCII(name[i:])
+			break
+		}
+	}
 
-				// 路径排除
-				for _, prefix := range excludedPaths {
-					if strings.HasPrefix(path, prefix) {
-						return nil
-					}
-				}
+	// 敏感文件名 (使用哈希去重)
+	if sensitiveFilenames[nameLower] {
+		hash := fnv1a("file:" + path)
+		if !isDuplicateHash(hash) {
+			atomic.AddUint64(&fileHits, 1)
+			printSuccess("SensitiveFile  %-15s  %s", magenta(nameLower), path)
+		}
+	}
 
-				atomic.AddUint64(&scannedFiles, 1)
+	// 文件名模糊匹配（vpn/代理/内网/入职/手册等敏感词）
+	for _, pattern := range sensitiveFilenamePatterns {
+		if strings.Contains(nameLower, pattern) {
+			hash := fnv1a("filepattern:" + path)
+			if !isDuplicateHash(hash) {
+				atomic.AddUint64(&fileHits, 1)
+				printSuccess("SensitiveFile  %-15s  %s", magenta(pattern), path)
+			}
+			break
+		}
+	}
 
-				// 快速获取扩展名
-				nameLower := toLowerASCII(name)
-				ext := ""
-				for i := len(name) - 1; i >= 0; i-- {
-					if name[i] == '.' {
-						ext = toLowerASCII(name[i:])
-						break
-					}
-				}
+	// 敏感扩展名 (不扫描内容，直接报告)
+	if nonScanExtensions[ext] {
+		hash := fnv1a("file:" + path)
+		if !isDuplicateHash(hash) {
+			atomic.AddUint64(&fileHits, 1)
+			printSuccess("SensitiveExt   %-15s  %s", magenta(ext), path)
+		}
+		return
+	}
 
-				// 敏感文件名 (使用哈希去重)
-				if sensitiveFilenames[nameLower] {
-					hash := fnv1a("file:" + path)
-					if !isDuplicateHash(hash) {
-						atomic.AddUint64(&fileHits, 1)
-						printSuccess("SensitiveFile  %-15s  %s", magenta(nameLower), path)
-					}
-				}
+	// 高价值文件 (凭证/私钥等必报)
+	if desc, ok := highValueExtensions[ext]; ok {
+		hash := fnv1a("highvalue:" + path)
+		if !isDuplicateHash(hash) {
+			atomic.AddUint64(&fileHits, 1)
+			printSuccess("HighValue      %-15s  %s", magenta(desc), path)
+		}
+	}
 
-				// 敏感扩展名 (不扫描内容，直接报告)
-				if nonScanExtensions[ext] {
-					hash := fnv1a("file:" + path)
-					if !isDuplicateHash(hash) {
-						atomic.AddUint64(&fileHits, 1)
-						printSuccess("SensitiveExt   %-15s  %s", magenta(ext), path)
-					}
-					return nil
-				}
-
-				// 高价值文件 (凭证/私钥等必报)
-				if desc, ok := highValueExtensions[ext]; ok {
-					hash := fnv1a("highvalue:" + path)
-					if !isDuplicateHash(hash) {
-						atomic.AddUint64(&fileHits, 1)
-						printSuccess("HighValue      %-15s  %s", magenta(desc), path)
-					}
-				}
-
-				// 需要扫描内容的文件 - 使用预计算集合
-				if _, shouldScan := scanExts[ext]; shouldScan {
-					info, err := os.Lstat(path)
-					if err != nil || info.Size() > maxFileSize || info.Size() == 0 {
-						return nil
-					}
-					fileQueue <- path
-				}
-
-				return nil
-			},
-			ErrorCallback: func(path string, err error) godirwalk.ErrorAction {
-				return godirwalk.SkipNode
-			},
-		})
+	// 需要扫描内容的文件 - 使用预计算集合
+	if _, shouldScan := scanExts[ext]; shouldScan {
+		info, err := os.Lstat(path)
+		if err != nil || info.Size() > maxFileSize || info.Size() == 0 {
+			return
+		}
+		fileQueue <- fileJob{path: path, ext: ext}
 	}
 }
 
@@ -836,7 +1218,7 @@ func scanOfficeFile(path, ext string) {
 	case ".pptx":
 		content, err = extractPptxText(path)
 	case ".ppt":
-		content, err = extractStringsFromBinary(path)
+		content, err = extractPptText(path)
 	}
 	if err != nil || content == "" {
 		return
@@ -857,6 +1239,9 @@ func scanOfficeFile(path, ext string) {
 		}
 		scanLineWithRules(path, line, lineNum+1, matchedRules)
 	}
+
+	// 补充模式扫描：IP、URL、凭据对、弱口令、邮箱
+	scanContentPatterns(path, content)
 }
 
 // extractPptxText 从 .pptx 文件提取文本
@@ -1162,16 +1547,17 @@ func contentWorker() {
 	localMatchedRules := make(map[string]struct{}, 16)
 	localBuf := make([]byte, readBufferSize)
 
-	for path := range fileQueue {
-		ext := strings.ToLower(filepath.Ext(path))
-
+	for job := range fileQueue {
 		// Office 文档使用特殊处理
-		if officeExtensions[ext] {
-			scanOfficeFile(path, ext)
+		if officeExtensions[job.ext] {
+			scanOfficeFile(job.path, job.ext)
 		} else {
 			// 普通文件扫描
-			scanFileContentOptimized(path, localBuf, localMatchedRules)
+			scanFileContentOptimized(job.path, job.ext, localBuf, localMatchedRules)
 		}
+
+		// 可选的 YARA 特征扫描（仅启用 yara build tag 时生效）
+		scanFileWithYara(job.path)
 
 		// 清空 map 以复用
 		for k := range localMatchedRules {
@@ -1181,15 +1567,7 @@ func contentWorker() {
 }
 
 // 快速文件扫描 - 一次性读取，避免多次系统调用
-func scanFileContentOptimized(path string, buf []byte, matchedRules map[string]struct{}) {
-	ext := strings.ToLower(filepath.Ext(path))
-
-	// Office 文档特殊处理
-	if officeExtensions[ext] {
-		scanOfficeFile(path, ext)
-		return
-	}
-
+func scanFileContentOptimized(path, ext string, buf []byte, matchedRules map[string]struct{}) {
 	// 一次性读取整个文件（或前 512KB）
 	file, err := os.Open(path)
 	if err != nil {
@@ -1245,6 +1623,10 @@ func scanFileContentOptimized(path string, buf []byte, matchedRules map[string]s
 		return
 	}
 
+	// 补充模式扫描：IP、URL、凭据对、弱口令、邮箱（不依赖 keyword 预筛选）
+	contentStr := string(data)
+	scanContentPatterns(path, contentStr)
+
 	// 快速全文预筛选 - 如果整个文件没有关键字特征，直接跳过
 	if !quickPreFilter(data) {
 		return
@@ -1296,6 +1678,13 @@ func scanFileContentOptimized(path string, buf []byte, matchedRules map[string]s
 
 // ==================== 进程扫描 ====================
 
+// cleanCmdlinePaths 把命令行中的完整路径替换成 basename，避免目录名里的工具名造成误报
+var pathStripper = regexp.MustCompile(`(?i)(?:[A-Za-z]:\\[^ ]*\\|/[^ ]*/)([^ /\\]+)`)
+
+func cleanCmdlinePaths(cmdline string) string {
+	return pathStripper.ReplaceAllString(cmdline, "$1")
+}
+
 func scanProcesses() {
 	procs, _ := process.Processes()
 	seen := make(map[string]struct{}, 32)
@@ -1306,13 +1695,24 @@ func scanProcesses() {
 			continue
 		}
 		cmdline, _ := p.Cmdline()
-		target := name + " " + cmdline
 
+		nameLower := strings.ToLower(name)
+		cmdClean := cleanCmdlinePaths(cmdline)
+
+		matched := false
 		for desc, pattern := range interestingProcesses {
 			key := desc + ":" + name
 			if _, ok := seen[key]; ok {
 				continue
 			}
+
+			// 默认只匹配进程名，避免命令行路径里的目录名造成误报
+			// SSHTunnel 需要同时看命令行参数（ssh -R/-L/-D）
+			target := nameLower
+			if desc == "SSHTunnel" && cmdClean != "" {
+				target = nameLower + " " + cmdClean
+			}
+
 			if pattern.MatchString(target) {
 				seen[key] = struct{}{}
 				atomic.AddUint64(&processHits, 1)
@@ -1321,9 +1721,47 @@ func scanProcesses() {
 					cmd = name
 				}
 				printSuccess("Process        %-20s  PID:%-6d  %s", magenta(desc), p.Pid, cmd)
+				cat := processSeverityMap[desc]
+				if cat == "" {
+					cat = "Process"
+				}
+				globalReporter.AddFinding(cat, desc, fmt.Sprintf("%s (PID:%d)", name, p.Pid), 0, cmd)
+				matched = true
 				break
 			}
 		}
+
+		// 外部 JSON 规则（EDR/AV/安全产品等），避免与内置规则重复报告
+		if matched {
+			continue
+		}
+		for _, rule := range externalProcessRules {
+			if rule.re == nil {
+				continue
+			}
+			key := rule.Name + ":" + name
+			if _, ok := seen[key]; ok {
+				continue
+			}
+			if rule.re.MatchString(nameLower) {
+				seen[key] = struct{}{}
+				atomic.AddUint64(&processHits, 1)
+				cmd := truncate(cmdline, 60)
+				if cmd == "" {
+					cmd = name
+				}
+				printSuccess("Process        %-20s  PID:%-6d  %s", magenta(rule.Name), p.Pid, cmd)
+				cat := rule.Category
+				if cat == "" {
+					cat = "Process"
+				}
+				globalReporter.AddFinding(cat, rule.Name, fmt.Sprintf("%s (PID:%d)", name, p.Pid), 0, cmd)
+				break
+			}
+		}
+
+		// 可选的 YARA 进程内存扫描（仅启用 yara build tag 时生效）
+		scanProcessWithYara(p.Pid, name)
 	}
 }
 
@@ -1508,7 +1946,7 @@ func scanBrowserData() {
 }
 
 func scanBrowserHistory(browser, dbPath string) {
-	db, err := sql.Open("sqlite3", dbPath+"?mode=ro")
+	db, err := openSQLiteDB(dbPath + "?mode=ro")
 	if err != nil {
 		return
 	}
@@ -1581,13 +2019,14 @@ func scanEnvironment() {
 
 // Config 扫描配置
 type Config struct {
-	TargetPath   string
-	Workers      int
-	StealthMs    int
-	OutputPath   string
-	OutputFormat string
-	SkipSandbox  bool
-	SkipDebug    bool
+	TargetPath    string
+	Workers       int
+	StealthMs     int
+	OutputPath    string
+	OutputFormat  string
+	SkipSandbox   bool
+	SkipDebug     bool
+	YaraRulesPath string
 }
 
 // parseConfig 解析命令行参数
@@ -1602,6 +2041,7 @@ func parseConfig() *Config {
 	flag.BoolVar(&silent, "silent", false, "Silent mode")
 	flag.BoolVar(&cfg.SkipSandbox, "skip-sandbox", false, "Skip sandbox check")
 	flag.BoolVar(&cfg.SkipDebug, "skip-debug", false, "Skip debug check")
+	flag.StringVar(&cfg.YaraRulesPath, "yara-rules", "", "YARA rule file/directory (requires yara build tag)")
 	flag.Parse()
 
 	// 根据格式调整输出文件扩展名
@@ -1619,7 +2059,7 @@ func (c *Config) fixOutputExtension() {
 }
 
 // initScanner 初始化扫描器
-func initScanner() {
+func initScanner(cfg *Config) {
 	initCharMask()
 
 	keywordMatcher = NewAhoCorasick([]string{
@@ -1630,9 +2070,17 @@ func initScanner() {
 		"sk_live", "npm_", "eyJ", "bearer", "basic",
 		"access", "connect", "database", "db_", "spring", "django",
 		"laravel", "rails", "heroku", "sendgrid", "twilio", "stripe",
+		"admin", "root", "user", "guest", "manager", "operator",
+		"http", "https", "ftp://", "://",
+		"vpn", "proxy", "内网", "入职", "手册", "内部", "intranet", "tunnel",
 	})
 
 	InitAllRules()
+
+	// 初始化可选的 YARA 引擎（仅在启用 yara build tag 且提供规则时工作）
+	if err := initYaraScanner(cfg.YaraRulesPath); err != nil {
+		printWarning("YARA init failed: %v", err)
+	}
 }
 
 // checkEnvironment 检查运行环境
@@ -1709,6 +2157,9 @@ func runQuickScans() {
 
 	printSection("BROWSER SCAN")
 	scanBrowserData()
+
+	printSection("WRITABLE DIRECTORIES")
+	scanWritableDirs()
 }
 
 // runFileSystemScan 运行文件系统扫描
@@ -1720,12 +2171,32 @@ func runFileSystemScan(cfg *Config, roots []string, singleFile string) {
 	if actualWorkers < runtime.NumCPU() {
 		actualWorkers = runtime.NumCPU()
 	}
-	contentWorkers := actualWorkers * 4
-	if contentWorkers > 128 {
-		contentWorkers = 128
+	// 内容扫描以 CPU 为主，worker 数与逻辑核心数持平即可，避免过量上下文切换
+	contentWorkers := actualWorkers
+	if contentWorkers > 64 {
+		contentWorkers = 64
 	}
 
-	fileQueue = make(chan string, contentWorkers*queueMultiple)
+	fileQueue = make(chan fileJob, contentWorkers*queueMultiple)
+
+	// 进度条/实时状态 goroutine
+	progressCtx, cancelProgress := context.WithCancel(context.Background())
+	progressing.Store(true)
+	go func() {
+		ticker := time.NewTicker(500 * time.Millisecond)
+		defer ticker.Stop()
+		for {
+			select {
+			case <-progressCtx.Done():
+				progressing.Store(false)
+				return
+			case <-ticker.C:
+				if !silent {
+					printProgress(atomic.LoadUint64(&scannedFiles), atomic.LoadUint64(&totalFindings))
+				}
+			}
+		}
+	}()
 
 	wg.Add(contentWorkers)
 	for i := 0; i < contentWorkers; i++ {
@@ -1736,7 +2207,7 @@ func runFileSystemScan(cfg *Config, roots []string, singleFile string) {
 	go func() {
 		if singleFile != "" {
 			atomic.AddUint64(&scannedFiles, 1)
-			fileQueue <- singleFile
+			fileQueue <- fileJob{path: singleFile, ext: strings.ToLower(filepath.Ext(singleFile))}
 		} else {
 			discoverFiles(roots, cfg.StealthMs)
 		}
@@ -1745,6 +2216,18 @@ func runFileSystemScan(cfg *Config, roots []string, singleFile string) {
 	}()
 
 	wg.Wait()
+	cancelProgress()
+}
+
+// printProgress 在同一行刷新进度，减少刷屏
+func printProgress(scanned, findings uint64) {
+	stdoutMu.Lock()
+	defer stdoutMu.Unlock()
+	fmt.Fprintf(stdoutWriter, "\r[*] Progress: %s files scanned | %s findings%s",
+		cyan(fmt.Sprintf("%d", scanned)),
+		magenta(fmt.Sprintf("%d", findings)),
+		strings.Repeat(" ", 10))
+	stdoutWriter.Flush()
 }
 
 // printResults 打印结果
@@ -1752,8 +2235,11 @@ func printResults(cfg *Config, elapsed time.Duration) {
 	printSection("SCAN COMPLETE")
 
 	if !silent {
-		fmt.Println()
-		fmt.Printf("  %s Scanned:  %d files in %s\n", cyan("│"), atomic.LoadUint64(&scannedFiles), elapsed.Round(time.Millisecond))
+		stdoutMu.Lock()
+		fmt.Fprintln(stdoutWriter)
+		fmt.Fprintf(stdoutWriter, "  %s Scanned:  %d files in %s\n", cyan("│"), atomic.LoadUint64(&scannedFiles), elapsed.Round(time.Millisecond))
+		stdoutWriter.Flush()
+		stdoutMu.Unlock()
 	}
 
 	globalReporter.PrintSummary()
@@ -1761,8 +2247,11 @@ func printResults(cfg *Config, elapsed time.Duration) {
 	if err := globalReporter.GenerateReport(cfg.OutputPath, cfg.OutputFormat, elapsed); err != nil {
 		printWarning("Failed to save report: %v", err)
 	} else if !silent {
-		fmt.Println()
-		fmt.Printf("  %s Report saved: %s\n", green("►"), cfg.OutputPath)
+		stdoutMu.Lock()
+		fmt.Fprintln(stdoutWriter)
+		fmt.Fprintf(stdoutWriter, "  %s Report saved: %s\n", green("►"), cfg.OutputPath)
+		stdoutWriter.Flush()
+		stdoutMu.Unlock()
 	}
 }
 
@@ -1771,8 +2260,9 @@ func printResults(cfg *Config, elapsed time.Duration) {
 func main() {
 	cfg := parseConfig()
 
-	initScanner()
+	initScanner(cfg)
 	printBanner()
+	printSystemInfo()
 
 	if !checkEnvironment(cfg) {
 		return
@@ -1787,6 +2277,7 @@ func main() {
 		flushOutput()
 		outputWriter.Flush()
 	}()
+	defer closeYaraScanner()
 
 	initExclusions()
 

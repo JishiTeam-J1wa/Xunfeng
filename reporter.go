@@ -77,9 +77,18 @@ func NewReporter() *Reporter {
 		findings: make([]Finding, 0, 1000),
 		counts:   make(map[string]int),
 		maxPerCategory: map[string]int{
-			"BrowserHist":  10,
-			"ShellHistory": 20,
-			"EnvVar":       10,
+			"BrowserHist":    10,
+			"ShellHistory":   20,
+			"EnvVar":         10,
+			"IPAddr":         50,
+			"URL":            50,
+			"Email":          20,
+			"WeakPassword":        30,
+			"CredentialPair":      50,
+			"WritableDirCritical": 10,
+			"WritableDirHigh":     30,
+			"WritableDirMedium":   30,
+			"WritableDirLow":      20,
 		},
 	}
 }
@@ -88,25 +97,33 @@ var globalReporter = NewReporter()
 
 // 类别到严重程度的映射
 var categorySeverity = map[string]Severity{
-	// Critical - 直接可利用
-	"PrivateKey":   SeverityCritical,
-	"AWSKey":       SeverityCritical,
-	"AWSSecret":    SeverityCritical,
-	"GithubToken":  SeverityCritical,
-	"GitlabToken":  SeverityCritical,
-	"SSHKey":       SeverityCritical,
-	"DBConnStr":    SeverityCritical,
+	// Critical - 直接可利用 / 恶意进程
+	"PrivateKey":     SeverityCritical,
+	"AWSKey":         SeverityCritical,
+	"AWSSecret":      SeverityCritical,
+	"GithubToken":    SeverityCritical,
+	"GitlabToken":    SeverityCritical,
+	"SSHKey":         SeverityCritical,
+	"DBConnStr":      SeverityCritical,
+	"MalwareProc":    SeverityCritical,
+	"StealerProc":    SeverityCritical,
+	"C2Proc":         SeverityCritical,
+	"CredentialTool": SeverityCritical,
 
-	// High - 敏感凭证
-	"Password":     SeverityHigh,
-	"Secret":       SeverityHigh,
-	"Token":        SeverityHigh,
-	"APIKey":       SeverityHigh,
-	"AliKey":       SeverityHigh,
-	"TencentKey":   SeverityHigh,
-	"CloudCred":    SeverityHigh,
-	"DBPassword":   SeverityHigh,
-	"JWT":          SeverityHigh,
+	// High - 敏感凭证 / 渗透工具
+	"Password":        SeverityHigh,
+	"Secret":          SeverityHigh,
+	"Token":           SeverityHigh,
+	"APIKey":          SeverityHigh,
+	"AliKey":          SeverityHigh,
+	"TencentKey":      SeverityHigh,
+	"CloudCred":       SeverityHigh,
+	"DBPassword":      SeverityHigh,
+	"JWT":             SeverityHigh,
+	"PentestTool":     SeverityHigh,
+	"CredentialPair":  SeverityHigh,
+	"WeakPassword":    SeverityMedium,
+	"Email":           SeverityInfo,
 
 	// Medium - 配置/凭证文件
 	"SensitiveFile": SeverityMedium,
@@ -116,17 +133,45 @@ var categorySeverity = map[string]Severity{
 	"GitCred":       SeverityMedium,
 	"DjangoSecret":  SeverityMedium,
 	"LaravelKey":    SeverityMedium,
+	"VPNConfig":     SeverityMedium,
+	"ProxyConfig":   SeverityMedium,
 
 	// Low - 可能有用的信息
-	"SensitiveExt":  SeverityLow,
-	"Process":       SeverityLow,
-	"NetListen":     SeverityLow,
-	"NetConn":       SeverityLow,
-	"ShellHistory":  SeverityLow,
+	"SensitiveExt":        SeverityLow,
+	"Process":             SeverityLow,
+	"NetListen":           SeverityLow,
+	"NetConn":             SeverityLow,
+	"ShellHistory":        SeverityLow,
+	"ProxyTool":           SeverityLow,
+	"RemoteTool":          SeverityLow,
+	"Security":            SeverityLow,
+	"AV":                  SeverityLow,
+	"EDR":                 SeverityLow,
+	"EPP":                 SeverityLow,
+	"Firewall/CloudSec":   SeverityLow,
+	"Telemetry":           SeverityLow,
+	"Agent/Monitor":       SeverityLow,
+	"ZTNA":                SeverityLow,
+	"SIEM-EDR":            SeverityLow,
+	"Vuln Scanner":        SeverityLow,
+	"DFIR":                SeverityLow,
+	"IntranetInfo":        SeverityLow,
+	"OnboardingDoc":       SeverityLow,
+	"ManualDoc":           SeverityLow,
+	"IPAddr":              SeverityInfo,
+	"URL":                 SeverityInfo,
+	"YaraRule":            SeverityMedium,
 
 	// Info - 信息收集
 	"BrowserHist":   SeverityInfo,
 	"EnvVar":        SeverityInfo,
+	"YaraProc":      SeverityHigh,
+
+	// Writable directories - 可写可执行目录风险
+	"WritableDirCritical": SeverityCritical,
+	"WritableDirHigh":     SeverityHigh,
+	"WritableDirMedium":   SeverityMedium,
+	"WritableDirLow":      SeverityLow,
 }
 
 func getSeverity(category string) Severity {
@@ -193,6 +238,10 @@ func (r *Reporter) PrintFinding(category, title, path string, line int, match st
 		return
 	}
 
+	// 实时刷新到控制台，营造“流式输出”效果
+	stdoutMu.Lock()
+	defer stdoutMu.Unlock()
+
 	// 格式化路径
 	displayPath := formatPath(path, 50)
 
@@ -206,24 +255,25 @@ func (r *Reporter) PrintFinding(category, title, path string, line int, match st
 	sevStr := fmt.Sprintf("%-8s", severity.String())
 
 	if line > 0 {
-		fmt.Printf("[%s] %-14s  %s:%d  %s\n",
+		fmt.Fprintf(stdoutWriter, "[%s] %-14s  %s:%d  %s\n",
 			colorFn(sevStr[:4]),
 			category,
 			displayPath,
 			line,
 			cyan(displayMatch))
 	} else if match != "" {
-		fmt.Printf("[%s] %-14s  %-50s  %s\n",
+		fmt.Fprintf(stdoutWriter, "[%s] %-14s  %-50s  %s\n",
 			colorFn(sevStr[:4]),
 			category,
 			displayPath,
 			cyan(displayMatch))
 	} else {
-		fmt.Printf("[%s] %-14s  %s\n",
+		fmt.Fprintf(stdoutWriter, "[%s] %-14s  %s\n",
 			colorFn(sevStr[:4]),
 			category,
 			displayPath)
 	}
+	stdoutWriter.Flush()
 }
 
 // formatPath 格式化路径显示 (UTF-8 安全)
@@ -497,27 +547,28 @@ func (r *Reporter) PrintSummary() {
 	importantCount := severityCounts[SeverityCritical] + severityCounts[SeverityHigh] +
 		severityCounts[SeverityMedium] + severityCounts[SeverityLow]
 
-	fmt.Println()
-	fmt.Printf("  %s 敏感发现:\n", white("┌"))
+	fmt.Fprintln(stdoutWriter)
+	fmt.Fprintf(stdoutWriter, "  %s 敏感发现:\n", white("┌"))
 
 	if c := severityCounts[SeverityCritical]; c > 0 {
-		fmt.Printf("  %s %s  %d (私钥/连接串/云密钥)\n", white("│"), red("严重:"), c)
+		fmt.Fprintf(stdoutWriter, "  %s %s  %d (私钥/连接串/云密钥)\n", white("│"), red("严重:"), c)
 	}
 	if c := severityCounts[SeverityHigh]; c > 0 {
-		fmt.Printf("  %s %s  %d (密码/Token/APIKey)\n", white("│"), magenta("高危:"), c)
+		fmt.Fprintf(stdoutWriter, "  %s %s  %d (密码/Token/APIKey)\n", white("│"), magenta("高危:"), c)
 	}
 	if c := severityCounts[SeverityMedium]; c > 0 {
-		fmt.Printf("  %s %s  %d (配置文件/中文密码)\n", white("│"), yellow("中危:"), c)
+		fmt.Fprintf(stdoutWriter, "  %s %s  %d (配置文件/中文密码)\n", white("│"), yellow("中危:"), c)
 	}
 	if c := severityCounts[SeverityLow]; c > 0 {
-		fmt.Printf("  %s %s  %d (敏感文件/进程)\n", white("│"), cyan("低危:"), c)
+		fmt.Fprintf(stdoutWriter, "  %s %s  %d (敏感文件/进程)\n", white("│"), cyan("低危:"), c)
 	}
 
-	fmt.Printf("  %s\n", white("├──────────────────────────"))
-	fmt.Printf("  %s 合计:  %s 个敏感发现\n", white("╰"), yellow(fmt.Sprintf("%d", importantCount)))
+	fmt.Fprintf(stdoutWriter, "  %s\n", white("├──────────────────────────"))
+	fmt.Fprintf(stdoutWriter, "  %s 合计:  %s 个敏感发现\n", white("╰"), yellow(fmt.Sprintf("%d", importantCount)))
 
 	// INFO 单独显示（如果有）
 	if c := severityCounts[SeverityInfo]; c > 0 {
-		fmt.Printf("       %s (%d 条信息收集)\n", white("+ INFO"), c)
+		fmt.Fprintf(stdoutWriter, "       %s (%d 条信息收集)\n", white("+ INFO"), c)
 	}
+	stdoutWriter.Flush()
 }

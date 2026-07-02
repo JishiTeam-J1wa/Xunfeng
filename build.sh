@@ -2,16 +2,20 @@
 
 # XunFeng Cross-Platform Build Script
 # J4Team - 寻风构建脚本
+#
+# 默认使用 CGO_ENABLED=0，通过 modernc.org/sqlite 纯 Go 实现支持浏览器数据库读取，
+# 从而在无交叉编译器环境下也能一次性构建 Windows/Linux/macOS 全平台二进制。
+# 如果本地存在对应平台编译器且希望使用 mattn/go-sqlite3，可设置 USE_CGO=1 启用。
 
 set -e
 
 VERSION="3.0.0"
 OUTPUT_DIR="build"
 APP_NAME="xunfeng"
+USE_CGO="${USE_CGO:-0}"
 
-# 编译参数 (优化体积和隐匿性)
+# 编译参数 (优化体积)
 LDFLAGS="-s -w -X main.Version=${VERSION}"
-GCFLAGS=""
 TAGS="netgo"
 
 echo "=========================================="
@@ -46,37 +50,26 @@ for PLATFORM in "${PLATFORMS[@]}"; do
 
     echo "[*] Building ${GOOS}/${GOARCH}..."
 
-    # CGO 需要特殊处理 (sqlite3)
-    if [ "$GOOS" = "darwin" ] && [ "$(uname)" = "Darwin" ]; then
-        CGO_ENABLED=1 GOOS=$GOOS GOARCH=$GOARCH go build \
-            -ldflags "${LDFLAGS}" \
-            -o "${OUTPUT_DIR}/${OUTPUT_NAME}" \
-            .
-    elif [ "$GOOS" = "linux" ]; then
-        # Linux 需要交叉编译 CGO
-        if command -v x86_64-linux-gnu-gcc &> /dev/null && [ "$GOARCH" = "amd64" ]; then
-            CC=x86_64-linux-gnu-gcc CGO_ENABLED=1 GOOS=$GOOS GOARCH=$GOARCH go build \
-                -ldflags "${LDFLAGS}" \
-                -o "${OUTPUT_DIR}/${OUTPUT_NAME}" \
-                . 2>/dev/null || echo "  [!] ${GOOS}/${GOARCH} skipped (no cross-compiler)"
-        else
-            echo "  [!] ${GOOS}/${GOARCH} skipped (no cross-compiler)"
+    CGO_FLAG=0
+    CC_FLAG=""
+
+    # 仅在显式启用 CGO 且存在对应编译器时尝试使用 CGO
+    if [ "$USE_CGO" = "1" ]; then
+        if [ "$GOOS" = "darwin" ] && [ "$(uname)" = "Darwin" ]; then
+            CGO_FLAG=1
+        elif [ "$GOOS" = "linux" ] && [ "$GOARCH" = "amd64" ] && command -v x86_64-linux-gnu-gcc &> /dev/null; then
+            CGO_FLAG=1
+            CC_FLAG="CC=x86_64-linux-gnu-gcc"
+        elif [ "$GOOS" = "windows" ] && [ "$GOARCH" = "amd64" ] && command -v x86_64-w64-mingw32-gcc &> /dev/null; then
+            CGO_FLAG=1
+            CC_FLAG="CC=x86_64-w64-mingw32-gcc"
         fi
-    elif [ "$GOOS" = "windows" ]; then
-        if command -v x86_64-w64-mingw32-gcc &> /dev/null && [ "$GOARCH" = "amd64" ]; then
-            CC=x86_64-w64-mingw32-gcc CGO_ENABLED=1 GOOS=$GOOS GOARCH=$GOARCH go build \
-                -ldflags "${LDFLAGS}" \
-                -o "${OUTPUT_DIR}/${OUTPUT_NAME}" \
-                . 2>/dev/null || echo "  [!] ${GOOS}/${GOARCH} skipped (no cross-compiler)"
-        else
-            echo "  [!] ${GOOS}/${GOARCH} skipped (no cross-compiler)"
-        fi
-    else
-        CGO_ENABLED=1 GOOS=$GOOS GOARCH=$GOARCH go build \
-            -ldflags "${LDFLAGS}" \
-            -o "${OUTPUT_DIR}/${OUTPUT_NAME}" \
-            . 2>/dev/null || echo "  [!] ${GOOS}/${GOARCH} skipped"
     fi
+
+    env ${CC_FLAG} CGO_ENABLED=${CGO_FLAG} GOOS=${GOOS} GOARCH=${GOARCH} \
+        go build -tags "${TAGS}" -ldflags "${LDFLAGS}" \
+        -o "${OUTPUT_DIR}/${OUTPUT_NAME}" \
+        . || echo "  [!] ${GOOS}/${GOARCH} build failed"
 done
 
 echo ""

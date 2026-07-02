@@ -1,7 +1,10 @@
 package main
 
 import (
+	"encoding/binary"
 	"fmt"
+	"os"
+	"path/filepath"
 	"strings"
 	"sync"
 	"testing"
@@ -255,6 +258,8 @@ func TestQuickPreFilter(t *testing.T) {
 		{[]byte("password=xxx"), true},
 		{[]byte("SECRET_KEY=xxx"), true},
 		{[]byte("token: abc"), true},
+		{[]byte("密码：12345678"), true},     // 纯中文敏感词应通过预筛选
+		{[]byte("口令=87654321"), true},       // 纯中文敏感词应通过预筛选
 		{[]byte("12345678901234567890"), false}, // 纯数字，无敏感字符
 		{[]byte("short"), false},                 // 太短
 		{[]byte(strings.Repeat("x", 5000)), false}, // 太长
@@ -663,7 +668,7 @@ func TestInitScanner(t *testing.T) {
 		}
 	}()
 
-	initScanner()
+	initScanner(&Config{})
 
 	if keywordMatcher == nil {
 		t.Error("keywordMatcher should not be nil after init")
@@ -679,6 +684,109 @@ func TestCheckEnvironment(t *testing.T) {
 	// 跳过所有检查应该返回 true
 	if !checkEnvironment(cfg) {
 		t.Error("checkEnvironment with skips should return true")
+	}
+}
+
+func TestExtractOfficeBinaryText(t *testing.T) {
+	// 构造一个包含 ASCII、UTF-16LE 字符串以及中文 UTF-16LE 的假二进制文件
+	data := []byte{
+		// UTF-16LE "Hello World"
+		0x48, 0x00, 0x65, 0x00, 0x6C, 0x00, 0x6C, 0x00, 0x6F, 0x00,
+		0x20, 0x00, 0x57, 0x00, 0x6F, 0x00, 0x72, 0x00, 0x6C, 0x00, 0x64, 0x00,
+		0x00, 0x00,
+		// ASCII password=Secret123
+		'p', 'a', 's', 's', 'w', 'o', 'r', 'd', '=', 'S', 'e', 'c', 'r', 'e', 't', '1', '2', '3',
+		0x00, 0x00,
+		// UTF-16LE 中文 "中文字"
+		0x2D, 0x4E, 0x87, 0x65, 0x57, 0x5B,
+		0x00, 0x00,
+	}
+	path := filepath.Join(os.TempDir(), "xunfeng_office_extract_test.bin")
+	if err := os.WriteFile(path, data, 0644); err != nil {
+		t.Fatal(err)
+	}
+	defer os.Remove(path)
+
+	text, err := extractOfficeBinaryText(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if !strings.Contains(text, "Hello World") {
+		t.Errorf("expected UTF-16LE 'Hello World', got: %s", text)
+	}
+	if !strings.Contains(text, "password=Secret123") {
+		t.Errorf("expected ASCII 'password=Secret123', got: %s", text)
+	}
+	if !strings.Contains(text, "中文字") {
+		t.Errorf("expected UTF-16LE CJK '中文字', got: %s", text)
+	}
+}
+
+func TestExtractPPTTextRecords(t *testing.T) {
+	// 构造一个假的 PPT 记录：
+	// RecordHeader: ver/instance(2) + type(2) + length(4) = 8 bytes
+	// TextCharsAtom type = 0x0FA0, payload 为 UTF-16LE "ppt_password=Secret"
+	utf16Payload := []byte{
+		0x70, 0x00, 0x70, 0x00, 0x74, 0x00, 0x5F, 0x00, 0x70, 0x00, 0x61, 0x00,
+		0x73, 0x00, 0x73, 0x00, 0x77, 0x00, 0x6F, 0x00, 0x72, 0x00, 0x64, 0x00,
+		0x3D, 0x00, 0x53, 0x00, 0x65, 0x00, 0x63, 0x00, 0x72, 0x00, 0x65, 0x00,
+		0x74, 0x00,
+	}
+	recLen := uint32(len(utf16Payload))
+	data := []byte{
+		0x00, 0x00, // ver/instance
+		0xA0, 0x0F, // type = 0x0FA0 (TextCharsAtom)
+		byte(recLen), byte(recLen >> 8), byte(recLen >> 16), byte(recLen >> 24),
+	}
+	data = append(data, utf16Payload...)
+
+	text := extractPPTTextRecords(data)
+	if !strings.Contains(text, "ppt_password=Secret") {
+		t.Errorf("expected PPT TextCharsAtom text 'ppt_password=Secret', got: %s", text)
+	}
+}
+
+func TestExtractBiffText(t *testing.T) {
+	// 构造一个 BIFF8 LABEL 记录：
+	// rt=0x0204, rl, row(2), col(2), xf(2), cch(2), grbit(1), ASCII text
+	text := "password=Secret123"
+	cch := len(text)
+	rl := 6 + 1 + cch // row+col+xf + cch + grbit + chars
+	payload := make([]byte, 0, rl)
+	payload = binary.LittleEndian.AppendUint16(payload, 0) // row
+	payload = binary.LittleEndian.AppendUint16(payload, 0) // col
+	payload = binary.LittleEndian.AppendUint16(payload, 0) // xf
+	payload = binary.LittleEndian.AppendUint16(payload, uint16(cch))
+	payload = append(payload, 0x00) // grbit: compressed
+	payload = append(payload, text...)
+
+	data := make([]byte, 0, 4+len(payload))
+	data = binary.LittleEndian.AppendUint16(data, 0x0204) // LABEL
+	data = binary.LittleEndian.AppendUint16(data, uint16(len(payload)))
+	data = append(data, payload...)
+
+	got := extractBiffText(data)
+	if !strings.Contains(got, text) {
+		t.Errorf("expected BIFF LABEL text %q, got: %s", text, got)
+	}
+}
+
+func TestScanContentPatterns(t *testing.T) {
+	before := len(globalReporter.findings)
+	content := `
+server=192.168.1.100
+admin admin123
+root:Password1
+https://internal.example.com/login
+http://192.168.0.1:8080/admin
+contact@example.com
+admin123
+`
+	scanContentPatterns("test.txt", content)
+	after := len(globalReporter.findings)
+	if after <= before {
+		t.Error("expected content pattern findings")
 	}
 }
 

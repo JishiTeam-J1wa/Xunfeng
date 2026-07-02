@@ -99,10 +99,15 @@ var (
 	// 后渗透高价值文件
 	nonScanExtensions = map[string]bool{
 		// 数据库文件
-		".db": true, ".sqlite": true, ".sqlite3": true, ".mdb": true, ".accdb": true,
-		".dbf": true, ".frm": true, ".myd": true, ".myi": true, ".ibd": true,
+		".db": true, ".db3": true, ".sqlite": true, ".sqlite3": true, ".sqlitedb": true,
+		".sqlite-wal": true, ".sqlite-shm": true, ".sqlite-journal": true, ".db-journal": true,
+		".mdb": true, ".accdb": true, ".dbf": true,
+		".frm": true, ".myd": true, ".myi": true, ".ibd": true,
 		".ldf": true, ".mdf": true, ".ndf": true, // SQL Server
-		".ora": true, ".dbx": true,
+		".ora": true, ".orcl": true, ".dbx": true,
+		".fdb": true, ".gdb": true, // Firebird/InterBase
+		".sdf": true, // SQL Server Compact
+		".wdb": true, // Microsoft Works
 		// 密钥/证书
 		".keystore": true, ".jks": true, ".kdbx": true, ".psafe3": true,
 		".p12": true, ".pfx": true, ".keychain": true, ".ppk": true,
@@ -148,15 +153,26 @@ var (
 		".tf": true, ".crt": true, ".cer": true,
 	}
 
+	// sensitiveFilenamePatterns - 文件名模糊匹配（包含即命中）
+	sensitiveFilenamePatterns = []string{
+		"vpn", "proxy", "内网", "入职", "手册", "内部", "intranet", "tunnel",
+		"shadowsocks", "v2ray", "clash", "wireguard", "openvpn",
+		"账号", "密码", "口令", "密钥", "凭据", "credential",
+	}
+
 	// sensitiveFilenames - 敏感文件名 (更全面)
 	sensitiveFilenames = map[string]bool{
-		// 配置文件
+		// 通用配置文件
 		"web.config": true, "app.config": true, "applicationhost.config": true,
 		"config.php": true, "wp-config.php": true, "configuration.php": true,
 		"settings.py": true, "local_settings.py": true, "secrets.py": true,
 		"database.yml": true, "secrets.yml": true, "credentials.yml": true,
 		"appsettings.json": true, "secrets.json": true, "config.json": true,
+		"settings.json": true, "settings.xml": true, "config.xml": true,
 		"application.properties": true, "application.yml": true,
+		"application.conf": true, "application.json": true,
+		"local.properties": true, "gradle.properties": true, "pom.xml": true,
+		"web.xml": true, "hibernate.cfg.xml": true, "mybatis-config.xml": true,
 		// 凭证文件
 		"credentials": true, "credential": true, ".htpasswd": true,
 		"shadow": true, "passwd": true, "master.key": true,
@@ -178,10 +194,16 @@ var (
 		"kubeconfig": true, "admin.conf": true,
 		".git-credentials": true, ".gitconfig": true,
 		"ansible.cfg": true, "vault.yml": true,
+		"credentials.csv": true, "accesskeys.csv": true,
+		// 数据库文件（按文件名）
+		"login data": true, "logins.json": true, "key4.db": true,
+		"cookies.sqlite": true, "places.sqlite": true, "formhistory.sqlite": true,
+		"signons.sqlite": true, "permissions.sqlite": true,
 		// 工具配置
 		"filezilla.xml": true, "recentservers.xml": true, "sitemanager.xml": true,
 		"mobaxterm.ini": true, "winscp.ini": true, "securecrt.ini": true,
 		"connections.xml": true, "datagrip.xml": true,
+		"sessions.xml": true, "user.config": true,
 	}
 
 	// sensitiveRules - 内容匹配规则 (更精准)
@@ -356,6 +378,129 @@ var (
 			keywords: []string{"数据库", "mysql", "oracle", "sqlserver"},
 			minLen:   10,
 		},
+
+		// ========== 潜在敏感文档/配置 ==========
+		"VPNConfig": {
+			pattern:  regexp.MustCompile(`(?i)(?:vpn|wireguard|openvpn|l2tp|pptp|ipsec|zerotier|tailscale)\s*(?:server|host|address|endpoint|config|conf|psk|secret|key|username|password)\s*[:=]\s*['"]?([^\s'"]{3,100})['"]?`),
+			keywords: []string{"vpn", "wireguard", "openvpn", "ipsec", "zerotier", "tailscale"},
+			minLen:   10,
+		},
+		"ProxyConfig": {
+			pattern:  regexp.MustCompile(`(?i)(?:proxy|socks|http[_-]?proxy|https[_-]?proxy|all[_-]?proxy|no[_-]?proxy)\s*[:=]\s*['"]?([^\s'"]{5,200})['"]?`),
+			keywords: []string{"proxy", "socks", "http_proxy", "https_proxy"},
+			minLen:   10,
+		},
+		"IntranetInfo": {
+			pattern:  regexp.MustCompile(`(?i)(内网|intranet|internal|内部门户|内网地址|内网系统|内网平台).*?(?:地址|url|ip|域名|domain|入口|登录|账号)`),
+			keywords: []string{"内网", "intranet", "internal", "内部门户"},
+			minLen:   10,
+		},
+		"OnboardingDoc": {
+			pattern:  regexp.MustCompile(`(?i)(入职|onboarding|新人|员工入职|入职指南|入职手册|账号申请).*?(?:账号|密码|登录|vpn|邮箱|内网)`),
+			keywords: []string{"入职", "onboarding", "新人", "入职指南"},
+			minLen:   10,
+		},
+		"ManualDoc": {
+			pattern:  regexp.MustCompile(`(?i)(手册|manual|运维手册|操作手册|部署手册|技术手册).*?(?:账号|密码|登录|地址|配置|vpn|代理|内网)`),
+			keywords: []string{"手册", "manual", "运维手册", "操作手册"},
+			minLen:   10,
+		},
+	}
+
+	// processSeverityMap 把内置进程描述映射到报告类别（从而决定严重等级）
+	processSeverityMap = map[string]string{
+		// 远控 / RAT / C2 —— 严重
+		"VNC":        "RemoteTool",
+		"TeamViewer": "RemoteTool",
+		"AnyDesk":    "RemoteTool",
+		"ToDesk":     "RemoteTool",
+		"Sunlogin":   "RemoteTool",
+		"RustDesk":   "RemoteTool",
+		"Gh0st":      "MalwareProc",
+		"Cobalt":     "MalwareProc",
+		"AsyncRAT":   "MalwareProc",
+		"DcRat":      "MalwareProc",
+		"BitRAT":     "MalwareProc",
+		"DarkComet":  "MalwareProc",
+		"NanoCore":   "MalwareProc",
+		"njRAT":      "MalwareProc",
+		"Remcos":     "MalwareProc",
+		"Orcus":      "MalwareProc",
+		"Quasar":     "MalwareProc",
+		"XWorm":      "MalwareProc",
+		"SparkRAT":   "MalwareProc",
+
+		// 信息窃取器 —— 严重
+		"Lumma":       "StealerProc",
+		"Stealc":      "StealerProc",
+		"RisePro":     "StealerProc",
+		"MetaStealer": "StealerProc",
+		"RedLine":     "StealerProc",
+		"Raccoon":     "StealerProc",
+		"Vidar":       "StealerProc",
+
+		// 代理工具 —— 低危
+		"Frp":         "ProxyTool",
+		"NPS":         "ProxyTool",
+		"Ngrok":       "ProxyTool",
+		"Chisel":      "ProxyTool",
+		"Clash":       "ProxyTool",
+		"V2Ray":       "ProxyTool",
+		"Cloudflared": "ProxyTool",
+		"Stowaway":    "ProxyTool",
+		"Gost":        "ProxyTool",
+		"SSHTunnel":   "ProxyTool",
+
+		// C2 框架 —— 严重
+		"Sliver":     "C2Proc",
+		"Havoc":      "C2Proc",
+		"BruteRatel": "C2Proc",
+		"Covenant":   "C2Proc",
+		"Mythic":     "C2Proc",
+		"Empire":     "C2Proc",
+
+		// 渗透工具 —— 中危/高危
+		"Nmap":       "PentestTool",
+		"Masscan":    "PentestTool",
+		"Fscan":      "PentestTool",
+		"SQLMap":     "PentestTool",
+		"Hydra":      "PentestTool",
+		"Metasploit": "PentestTool",
+		"Xray":       "PentestTool",
+		"Goby":       "PentestTool",
+		"Yakit":      "PentestTool",
+		"BurpSuite":  "PentestTool",
+		"Commix":     "PentestTool",
+		"BeEF":       "PentestTool",
+
+		// 凭据提取工具 —— 严重
+		"Mimikatz":   "CredentialTool",
+		"LaZagne":    "CredentialTool",
+		"SharpHound": "CredentialTool",
+
+		// 服务类 —— 低危/信息
+		"MySQL":      "Process",
+		"PostgreSQL": "Process",
+		"MongoDB":    "Process",
+		"Redis":      "Process",
+		"Nginx":      "Process",
+		"Apache":     "Process",
+		"Tomcat":     "Process",
+		"Docker":     "Process",
+
+		// 面板
+		"BaoTa":  "Process",
+		"1Panel": "Process",
+
+		// 开发
+		"VSCode":     "Process",
+		"JetBrains":  "Process",
+		"FinalShell": "Process",
+
+		// 通讯
+		"Feishu":   "Process",
+		"DingTalk": "Process",
+		"WeCom":    "Process",
 	}
 
 	// interestingProcesses - 进程特征
@@ -369,6 +514,26 @@ var (
 		"RustDesk":   regexp.MustCompile(`(?i)\brustdesk(?:\.exe)?\b`),
 		"Gh0st":      regexp.MustCompile(`(?i)\bgh0st(?:\.exe)?\b`),
 		"Cobalt":     regexp.MustCompile(`(?i)(?:beacon|cobaltstrike)`),
+		"AsyncRAT":   regexp.MustCompile(`(?i)\basyncrat(?:\.exe)?\b`),
+		"DcRat":      regexp.MustCompile(`(?i)\bdcrat(?:\.exe)?\b`),
+		"BitRAT":     regexp.MustCompile(`(?i)\bbitrat(?:\.exe)?\b`),
+		"DarkComet":  regexp.MustCompile(`(?i)\bdarkcomet(?:\.exe)?\b`),
+		"NanoCore":   regexp.MustCompile(`(?i)\bnanocore(?:\.exe)?\b`),
+		"njRAT":      regexp.MustCompile(`(?i)\bnjrat(?:\.exe)?\b`),
+		"Remcos":     regexp.MustCompile(`(?i)\bremcos(?:\.exe)?\b`),
+		"Orcus":      regexp.MustCompile(`(?i)\borcus(?:\.exe)?\b`),
+		"Quasar":     regexp.MustCompile(`(?i)\bquasar(?:\.exe)?\b`),
+		"XWorm":      regexp.MustCompile(`(?i)\bxworm(?:\.exe)?\b`),
+		"SparkRAT":   regexp.MustCompile(`(?i)\bsparkrat(?:\.exe)?\b`),
+
+		// 信息窃取器
+		"Lumma":      regexp.MustCompile(`(?i)\blumma(?:stealer)?(?:\.exe)?\b`),
+		"Stealc":     regexp.MustCompile(`(?i)\bstealc(?:\.exe)?\b`),
+		"RisePro":    regexp.MustCompile(`(?i)\brisepro(?:\.exe)?\b`),
+		"MetaStealer": regexp.MustCompile(`(?i)\bmetastealer(?:\.exe)?\b`),
+		"RedLine":    regexp.MustCompile(`(?i)\bredline(?:stealer)?(?:\.exe)?\b`),
+		"Raccoon":    regexp.MustCompile(`(?i)\braccoon(?:stealer)?(?:\.exe)?\b`),
+		"Vidar":      regexp.MustCompile(`(?i)\bvidar(?:\.exe)?\b`),
 
 		// 代理
 		"Frp":       regexp.MustCompile(`(?i)\b(?:frpc|frps)(?:\.exe)?\b`),
@@ -377,7 +542,18 @@ var (
 		"Chisel":    regexp.MustCompile(`(?i)\bchisel(?:\.exe)?\b`),
 		"Clash":     regexp.MustCompile(`(?i)\b(?:clash|mihomo)(?:\.exe)?\b`),
 		"V2Ray":     regexp.MustCompile(`(?i)\bv2ray(?:\.exe)?\b`),
+		"Cloudflared": regexp.MustCompile(`(?i)\bcloudflared(?:\.exe)?\b`),
+		"Stowaway":  regexp.MustCompile(`(?i)\bstowaway(?:\.exe)?\b`),
+		"Gost":      regexp.MustCompile(`(?i)\bgost(?:\.exe)?\b`),
 		"SSHTunnel": regexp.MustCompile(`\bssh\b.*-[RLD]\s+\d+`),
+
+		// C2 框架
+		"Sliver":     regexp.MustCompile(`(?i)\bsliver(?:\.exe)?\b`),
+		"Havoc":      regexp.MustCompile(`(?i)\bhavoc(?:\.exe)?\b`),
+		"BruteRatel": regexp.MustCompile(`(?i)\bbruteratel(?:\.exe)?\b`),
+		"Covenant":   regexp.MustCompile(`(?i)\bcovenant(?:\.exe)?\b`),
+		"Mythic":     regexp.MustCompile(`(?i)\bmythic(?:\.exe)?\b`),
+		"Empire":     regexp.MustCompile(`(?i)\bempire(?:\.exe)?\b`),
 
 		// 渗透
 		"Nmap":       regexp.MustCompile(`(?i)\bnmap(?:\.exe)?\b`),
@@ -386,6 +562,12 @@ var (
 		"SQLMap":     regexp.MustCompile(`(?i)\bsqlmap\b`),
 		"Hydra":      regexp.MustCompile(`(?i)\bhydra(?:\.exe)?\b`),
 		"Metasploit": regexp.MustCompile(`(?i)(?:msfconsole|msfvenom|meterpreter)`),
+		"Xray":       regexp.MustCompile(`(?i)\bxray(?:\.exe)?\b`),
+		"Goby":       regexp.MustCompile(`(?i)\bgoby(?:\.exe)?\b`),
+		"Yakit":      regexp.MustCompile(`(?i)\byakit(?:\.exe)?\b`),
+		"BurpSuite":  regexp.MustCompile(`(?i)\b(?:burpsuite|burp suite)\b`),
+		"Commix":     regexp.MustCompile(`(?i)\bcommix(?:\.exe)?\b`),
+		"BeEF":       regexp.MustCompile(`(?i)\bbeef(?:\.exe)?\b`),
 
 		// 密码
 		"Mimikatz":   regexp.MustCompile(`(?i)(?:mimikatz|lsadump|sekurlsa)`),
