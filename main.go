@@ -25,7 +25,6 @@ import (
 	"unicode"
 	"unicode/utf8"
 
-	"github.com/fatih/color"
 	"github.com/shirou/gopsutil/v3/host"
 	"github.com/shirou/gopsutil/v3/mem"
 	psnet "github.com/shirou/gopsutil/v3/net"
@@ -47,7 +46,6 @@ const (
 var (
 	outputFile   *os.File
 	outputWriter *bufio.Writer
-	silent       bool
 
 	// 统计计数器
 	scannedFiles   uint64
@@ -70,19 +68,6 @@ type fileJob struct {
 }
 
 var (
-	// 标准输出缓冲与进度显示锁
-	stdoutWriter = bufio.NewWriter(os.Stdout)
-	stdoutMu     sync.Mutex
-	progressing  atomic.Bool
-
-	// 颜色
-	cyan    = color.New(color.FgCyan).SprintFunc()
-	green   = color.New(color.FgGreen).SprintFunc()
-	red     = color.New(color.FgRed).SprintFunc()
-	yellow  = color.New(color.FgYellow).SprintFunc()
-	magenta = color.New(color.FgMagenta).SprintFunc()
-	white   = color.New(color.FgWhite, color.Bold).SprintFunc()
-
 	// 分片去重 (减少锁竞争)
 	seenShards [shardCount]struct {
 		sync.RWMutex
@@ -274,86 +259,6 @@ func isDuplicateHash(hash uint64) bool {
 
 // ==================== 输出 ====================
 
-func printBanner() {
-	if silent {
-		return
-	}
-	banner := `
-   ██╗  ██╗██╗   ██╗███╗   ██╗███████╗███████╗███╗   ██╗ ██████╗
-   ╚██╗██╔╝██║   ██║████╗  ██║██╔════╝██╔════╝████╗  ██║██╔════╝
-    ╚███╔╝ ██║   ██║██╔██╗ ██║█████╗  █████╗  ██╔██╗ ██║██║  ███╗
-    ██╔██╗ ██║   ██║██║╚██╗██║██╔══╝  ██╔══╝  ██║╚██╗██║██║   ██║
-   ██╔╝ ██╗╚██████╔╝██║ ╚████║██║     ███████╗██║ ╚████║╚██████╔╝
-   ╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═══╝╚═╝     ╚══════╝╚═╝  ╚═══╝ ╚═════╝
-                                            %s
-`
-	stdoutMu.Lock()
-	fmt.Fprintf(stdoutWriter, cyan(banner), yellow("v3.0 by J4Team"))
-	fmt.Fprintln(stdoutWriter)
-	stdoutWriter.Flush()
-	stdoutMu.Unlock()
-}
-
-func printInfo(format string, args ...interface{}) {
-	msg := fmt.Sprintf(format, args...)
-	if !silent {
-		stdoutMu.Lock()
-		fmt.Fprintf(stdoutWriter, "[%s] %s\n", cyan("*"), msg)
-		stdoutWriter.Flush()
-		stdoutMu.Unlock()
-	}
-	writeOutput("[*] " + msg)
-}
-
-func printSuccess(format string, args ...interface{}) {
-	msg := fmt.Sprintf(format, args...)
-	atomic.AddUint64(&totalFindings, 1)
-	if !silent {
-		stdoutMu.Lock()
-		fmt.Fprintf(stdoutWriter, "[%s] %s\n", green("+"), msg)
-		stdoutWriter.Flush()
-		stdoutMu.Unlock()
-	}
-	writeOutput("[+] " + msg)
-}
-
-func printWarning(format string, args ...interface{}) {
-	if !silent {
-		stdoutMu.Lock()
-		fmt.Fprintf(stdoutWriter, "[%s] %s\n", yellow("!"), fmt.Sprintf(format, args...))
-		stdoutWriter.Flush()
-		stdoutMu.Unlock()
-	}
-}
-
-// printFinding 按严重等级输出一条发现（用于新增的可写目录等动态等级结果）
-func printFinding(severity Severity, category, path string, line int, match string) {
-	atomic.AddUint64(&totalFindings, 1)
-	if !silent {
-		stdoutMu.Lock()
-		label := severity.String()
-		colorFn := severity.Color()
-		if line > 0 {
-			fmt.Fprintf(stdoutWriter, "[%s] %-15s %s:%d  %s\n", colorFn(label), category, path, line, match)
-		} else {
-			fmt.Fprintf(stdoutWriter, "[%s] %-15s %s  %s\n", colorFn(label), category, path, match)
-		}
-		stdoutWriter.Flush()
-		stdoutMu.Unlock()
-	}
-	writeOutput(fmt.Sprintf("[%s] %s %s %s", severity.String(), category, path, match))
-}
-
-func printSection(title string) {
-	if !silent {
-		stdoutMu.Lock()
-		fmt.Fprintf(stdoutWriter, "\n%s %s %s\n", yellow("━━━━━━━━━━"), white(title), yellow("━━━━━━━━━━"))
-		stdoutWriter.Flush()
-		stdoutMu.Unlock()
-	}
-	writeOutput("\n========== " + title + " ==========")
-}
-
 // printSystemInfo 在启动时展示当前环境和权限信息
 func printSystemInfo() {
 	if silent {
@@ -375,13 +280,12 @@ func printSystemInfo() {
 
 	hostname, _ := os.Hostname()
 
-	stdoutMu.Lock()
-	fmt.Fprintln(stdoutWriter)
-	fmt.Fprintf(stdoutWriter, "%s %s %s\n", yellow("┌"), white("SYSTEM INFO"), yellow("───────────────────────────────┐"))
-	fmt.Fprintf(stdoutWriter, "%s %-14s %s\n", yellow("│"), cyan("当前用户:"), username)
-	fmt.Fprintf(stdoutWriter, "%s %-14s %s\n", yellow("│"), cyan("权限级别:"), privilege)
-	fmt.Fprintf(stdoutWriter, "%s %-14s %s\n", yellow("│"), cyan("主机名:"), hostname)
-	fmt.Fprintf(stdoutWriter, "%s %-14s %s\n", yellow("│"), cyan("操作系统:"), runtime.GOOS)
+	consolePrint("")
+	consolePrintf("%s %s %s", yellow("┌"), white("SYSTEM INFO"), yellow("───────────────────────────────┐"))
+	consolePrintf("%s %-14s %s", yellow("│"), cyan("当前用户:"), username)
+	consolePrintf("%s %-14s %s", yellow("│"), cyan("权限级别:"), privilege)
+	consolePrintf("%s %-14s %s", yellow("│"), cyan("主机名:"), hostname)
+	consolePrintf("%s %-14s %s", yellow("│"), cyan("操作系统:"), runtime.GOOS)
 
 	// 网卡/IP
 	ifaces, err := net.Interfaces()
@@ -407,43 +311,14 @@ func printSystemInfo() {
 					} else {
 						label = cyan("            ")
 					}
-					fmt.Fprintf(stdoutWriter, "%s %-14s %s: %s\n", yellow("│"), label, iface.Name, ip.String())
+					consolePrintf("%s %-14s %s: %s", yellow("│"), label, iface.Name, ip.String())
 				}
 			}
 		}
 	}
 
-	fmt.Fprintf(stdoutWriter, "%s\n", yellow("└────────────────────────────────────────────┘"))
-	fmt.Fprintln(stdoutWriter)
-	stdoutWriter.Flush()
-	stdoutMu.Unlock()
-}
-
-// 输出缓冲 (批量写入减少锁竞争)
-var outputBuffer struct {
-	sync.Mutex
-	buf []string
-}
-
-func writeOutput(msg string) {
-	// 已弃用 - 使用 globalReporter 替代
-}
-
-func flushOutputLocked() {
-	if outputWriter == nil || len(outputBuffer.buf) == 0 {
-		return
-	}
-	for _, msg := range outputBuffer.buf {
-		outputWriter.WriteString(msg)
-		outputWriter.WriteByte('\n')
-	}
-	outputBuffer.buf = outputBuffer.buf[:0]
-}
-
-func flushOutput() {
-	outputBuffer.Lock()
-	flushOutputLocked()
-	outputBuffer.Unlock()
+	consolePrintf("%s", yellow("└────────────────────────────────────────────┘"))
+	consolePrint("")
 }
 
 // ==================== 隐匿性 ====================
@@ -2104,7 +1979,8 @@ func setupOutput(outputPath string) error {
 		return err
 	}
 	outputWriter = bufio.NewWriterSize(outputFile, 256*1024)
-	return nil
+	// 同时初始化实时日志，崩溃时可恢复结果
+	return setupLiveLog(outputPath)
 }
 
 // resolveTargets 解析扫描目标
@@ -2219,27 +2095,21 @@ func runFileSystemScan(cfg *Config, roots []string, singleFile string) {
 	cancelProgress()
 }
 
-// printProgress 在同一行刷新进度，减少刷屏
-func printProgress(scanned, findings uint64) {
-	stdoutMu.Lock()
-	defer stdoutMu.Unlock()
-	fmt.Fprintf(stdoutWriter, "\r[*] Progress: %s files scanned | %s findings%s",
-		cyan(fmt.Sprintf("%d", scanned)),
-		magenta(fmt.Sprintf("%d", findings)),
-		strings.Repeat(" ", 10))
-	stdoutWriter.Flush()
-}
-
 // printResults 打印结果
 func printResults(cfg *Config, elapsed time.Duration) {
+	progressing.Store(false)
+	// 清除最后一行进度条，避免与总结输出交错
+	if !silent {
+		stdoutMu.Lock()
+		fmt.Fprint(stdoutWriter, "\r\033[K")
+		stdoutWriter.Flush()
+		stdoutMu.Unlock()
+	}
 	printSection("SCAN COMPLETE")
 
 	if !silent {
-		stdoutMu.Lock()
-		fmt.Fprintln(stdoutWriter)
-		fmt.Fprintf(stdoutWriter, "  %s Scanned:  %d files in %s\n", cyan("│"), atomic.LoadUint64(&scannedFiles), elapsed.Round(time.Millisecond))
-		stdoutWriter.Flush()
-		stdoutMu.Unlock()
+		consolePrint("")
+		consolePrintf("  %s Scanned:  %d files in %s", cyan("│"), atomic.LoadUint64(&scannedFiles), elapsed.Round(time.Millisecond))
 	}
 
 	globalReporter.PrintSummary()
@@ -2247,18 +2117,19 @@ func printResults(cfg *Config, elapsed time.Duration) {
 	if err := globalReporter.GenerateReport(cfg.OutputPath, cfg.OutputFormat, elapsed); err != nil {
 		printWarning("Failed to save report: %v", err)
 	} else if !silent {
-		stdoutMu.Lock()
-		fmt.Fprintln(stdoutWriter)
-		fmt.Fprintf(stdoutWriter, "  %s Report saved: %s\n", green("►"), cfg.OutputPath)
-		stdoutWriter.Flush()
-		stdoutMu.Unlock()
+		consolePrint("")
+		consolePrintf("  %s Report saved: %s", green("►"), cfg.OutputPath)
 	}
+	consoleFlush()
 }
 
 // ==================== Main ====================
 
 func main() {
 	cfg := parseConfig()
+
+	// 启动后台终端刷新，避免每条消息都 flush 导致卡顿
+	startConsoleWriter()
 
 	initScanner(cfg)
 	printBanner()
@@ -2274,8 +2145,8 @@ func main() {
 	}
 	defer outputFile.Close()
 	defer func() {
-		flushOutput()
 		outputWriter.Flush()
+		flushLiveLog()
 	}()
 	defer closeYaraScanner()
 

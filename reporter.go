@@ -181,7 +181,7 @@ func getSeverity(category string) Severity {
 	return SeverityInfo
 }
 
-// AddFinding 添加发现
+// AddFinding 添加发现（同时写入实时日志）
 func (r *Reporter) AddFinding(category, title, path string, line int, match string) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -222,7 +222,7 @@ func (r *Reporter) PrintFinding(category, title, path string, line int, match st
 				r.counts[category]++
 				r.mu.Unlock()
 				if !silent {
-					fmt.Printf("[%s] %s ... (more results hidden)\n", yellow("!"), category)
+					consolePrintf("[%s] %s ... (more results hidden)", yellow("!"), category)
 				}
 				return
 			}
@@ -238,10 +238,6 @@ func (r *Reporter) PrintFinding(category, title, path string, line int, match st
 		return
 	}
 
-	// 实时刷新到控制台，营造“流式输出”效果
-	stdoutMu.Lock()
-	defer stdoutMu.Unlock()
-
 	// 格式化路径
 	displayPath := formatPath(path, 50)
 
@@ -255,25 +251,26 @@ func (r *Reporter) PrintFinding(category, title, path string, line int, match st
 	sevStr := fmt.Sprintf("%-8s", severity.String())
 
 	if line > 0 {
-		fmt.Fprintf(stdoutWriter, "[%s] %-14s  %s:%d  %s\n",
+		consolePrintf("[%s] %-14s  %s:%d  %s",
 			colorFn(sevStr[:4]),
 			category,
 			displayPath,
 			line,
 			cyan(displayMatch))
 	} else if match != "" {
-		fmt.Fprintf(stdoutWriter, "[%s] %-14s  %-50s  %s\n",
+		consolePrintf("[%s] %-14s  %-50s  %s",
 			colorFn(sevStr[:4]),
 			category,
 			displayPath,
 			cyan(displayMatch))
 	} else {
-		fmt.Fprintf(stdoutWriter, "[%s] %-14s  %s\n",
+		consolePrintf("[%s] %-14s  %s",
 			colorFn(sevStr[:4]),
 			category,
 			displayPath)
 	}
-	stdoutWriter.Flush()
+	// 确保内容扫描等通过 PrintFinding 上报的发现也落入实时日志
+	writeLiveLog(fmt.Sprintf("[%s] %s %s %d %s", severity.String(), category, path, line, match))
 }
 
 // formatPath 格式化路径显示 (UTF-8 安全)
@@ -547,28 +544,27 @@ func (r *Reporter) PrintSummary() {
 	importantCount := severityCounts[SeverityCritical] + severityCounts[SeverityHigh] +
 		severityCounts[SeverityMedium] + severityCounts[SeverityLow]
 
-	fmt.Fprintln(stdoutWriter)
-	fmt.Fprintf(stdoutWriter, "  %s 敏感发现:\n", white("┌"))
+	consolePrint("")
+	consolePrintf("  %s 敏感发现:", white("┌"))
 
 	if c := severityCounts[SeverityCritical]; c > 0 {
-		fmt.Fprintf(stdoutWriter, "  %s %s  %d (私钥/连接串/云密钥)\n", white("│"), red("严重:"), c)
+		consolePrintf("  %s %s  %d (私钥/连接串/云密钥)", white("│"), red("严重:"), c)
 	}
 	if c := severityCounts[SeverityHigh]; c > 0 {
-		fmt.Fprintf(stdoutWriter, "  %s %s  %d (密码/Token/APIKey)\n", white("│"), magenta("高危:"), c)
+		consolePrintf("  %s %s  %d (密码/Token/APIKey)", white("│"), magenta("高危:"), c)
 	}
 	if c := severityCounts[SeverityMedium]; c > 0 {
-		fmt.Fprintf(stdoutWriter, "  %s %s  %d (配置文件/中文密码)\n", white("│"), yellow("中危:"), c)
+		consolePrintf("  %s %s  %d (配置文件/中文密码)", white("│"), yellow("中危:"), c)
 	}
 	if c := severityCounts[SeverityLow]; c > 0 {
-		fmt.Fprintf(stdoutWriter, "  %s %s  %d (敏感文件/进程)\n", white("│"), cyan("低危:"), c)
+		consolePrintf("  %s %s  %d (敏感文件/进程)", white("│"), cyan("低危:"), c)
 	}
 
-	fmt.Fprintf(stdoutWriter, "  %s\n", white("├──────────────────────────"))
-	fmt.Fprintf(stdoutWriter, "  %s 合计:  %s 个敏感发现\n", white("╰"), yellow(fmt.Sprintf("%d", importantCount)))
+	consolePrintf("  %s", white("├──────────────────────────"))
+	consolePrintf("  %s 合计:  %s 个敏感发现", white("╰"), yellow(fmt.Sprintf("%d", importantCount)))
 
 	// INFO 单独显示（如果有）
 	if c := severityCounts[SeverityInfo]; c > 0 {
-		fmt.Fprintf(stdoutWriter, "       %s (%d 条信息收集)\n", white("+ INFO"), c)
+		consolePrintf("       %s (%d 条信息收集)", white("+ INFO"), c)
 	}
-	stdoutWriter.Flush()
 }
