@@ -927,6 +927,40 @@ func extractXMLText(data []byte) string {
 
 // ==================== 文件扫描 ====================
 
+// countTargetFiles 预统计目标目录下会被文件系统扫描阶段处理的文件总数（用于稽核模式真实进度条）
+func countTargetFiles(roots []string) uint64 {
+	var total atomic.Uint64
+	var wg sync.WaitGroup
+	for _, root := range roots {
+		wg.Add(1)
+		go func(r string) {
+			defer wg.Done()
+			filepath.WalkDir(r, func(path string, d os.DirEntry, err error) error {
+				if err != nil {
+					return nil
+				}
+				name := d.Name()
+				if d.IsDir() {
+					if _, skip := excludedDirs[name]; skip {
+						return filepath.SkipDir
+					}
+					if isExcludedPath(path) {
+						return filepath.SkipDir
+					}
+					return nil
+				}
+				if isExcludedPath(path) {
+					return nil
+				}
+				total.Add(1)
+				return nil
+			})
+		}(root)
+	}
+	wg.Wait()
+	return total.Load()
+}
+
 func discoverFiles(roots []string, stealthMs int) {
 	rand.Shuffle(len(roots), func(i, j int) { roots[i], roots[j] = roots[j], roots[i] })
 
@@ -1924,6 +1958,7 @@ type Config struct {
 	SkipSandbox   bool
 	SkipDebug     bool
 	YaraRulesPath string
+	Jiwa          bool // 稽核模式：显示详细进度条和阶段信息
 }
 
 // parseConfig 解析命令行参数
@@ -1939,6 +1974,7 @@ func parseConfig() *Config {
 	flag.BoolVar(&cfg.SkipSandbox, "skip-sandbox", false, "Skip sandbox check")
 	flag.BoolVar(&cfg.SkipDebug, "skip-debug", false, "Skip debug check")
 	flag.StringVar(&cfg.YaraRulesPath, "yara-rules", "", "YARA rule file/directory (requires yara build tag)")
+	flag.BoolVar(&cfg.Jiwa, "jiwa", false, "稽核模式：显示详细进度条和阶段信息")
 	flag.Parse()
 
 	// 根据格式调整输出文件扩展名
@@ -1970,6 +2006,9 @@ func initScanner(cfg *Config) {
 		"admin", "root", "user", "guest", "manager", "operator",
 		"http", "https", "ftp://", "://",
 		"vpn", "proxy", "内网", "入职", "手册", "内部", "intranet", "tunnel",
+		"绝密", "机密", "秘密", "保密", "涉密", "密级", "解密",
+		"政务", "红头", "公文", "机关", "党委",
+		"决策", "决议", "纪要", "批示", "常委",
 	})
 
 	InitAllRules()
@@ -2076,12 +2115,22 @@ func runFileSystemScan(cfg *Config, roots []string, singleFile string) {
 	}
 
 	fileQueue = make(chan fileJob, contentWorkers*queueMultiple)
+	fileScanning.Store(true)
+	defer fileScanning.Store(false)
+
+	// 稽核模式：预统计文件总数，启用真实进度条
+	if cfg.Jiwa && singleFile == "" {
+		printInfo("Stage 1/2: Enumerating files...")
+		totalFiles := countTargetFiles(roots)
+		setTotalFilesForProgress(totalFiles)
+		printInfo("Stage 2/2: Scanning %d files...", totalFiles)
+	}
 
 	// 进度条/实时状态 goroutine
 	progressCtx, cancelProgress := context.WithCancel(context.Background())
 	progressing.Store(true)
 	go func() {
-		ticker := time.NewTicker(500 * time.Millisecond)
+		ticker := time.NewTicker(200 * time.Millisecond)
 		defer ticker.Stop()
 		for {
 			select {
@@ -2089,7 +2138,15 @@ func runFileSystemScan(cfg *Config, roots []string, singleFile string) {
 				progressing.Store(false)
 				return
 			case <-ticker.C:
-				if !silent {
+				if silent {
+					continue
+				}
+				if jiwaMode.Load() {
+					// 稽核模式下，只有完成预统计后才显示真实进度条
+					if totalFilesForProgress.Load() > 0 {
+						printProgressBar(atomic.LoadUint64(&scannedFiles), atomic.LoadUint64(&totalFindings))
+					}
+				} else {
 					printProgress(atomic.LoadUint64(&scannedFiles), atomic.LoadUint64(&totalFindings))
 				}
 			}
@@ -2120,7 +2177,9 @@ func runFileSystemScan(cfg *Config, roots []string, singleFile string) {
 // printResults 打印结果
 func printResults(cfg *Config, elapsed time.Duration) {
 	progressing.Store(false)
+	fileScanning.Store(false)
 	// 清除最后一行进度条，避免与总结输出交错
+	clearProgressBar()
 	if !silent {
 		stdoutMu.Lock()
 		fmt.Fprint(stdoutWriter, "\r\033[K")
@@ -2154,6 +2213,7 @@ func main() {
 	startConsoleWriter()
 
 	initScanner(cfg)
+	setJiwaMode(cfg.Jiwa)
 	printBanner()
 	printSystemInfo()
 
@@ -2179,7 +2239,11 @@ func main() {
 		return
 	}
 
-	printInfo("Workers: %d | Stealth: %dms | Output: %s", cfg.Workers, cfg.StealthMs, cfg.OutputPath)
+	if cfg.Jiwa {
+		printInfo("Mode: 稽核检查 | Workers: %d | Output: %s", cfg.Workers, cfg.OutputPath)
+	} else {
+		printInfo("Workers: %d | Stealth: %dms | Output: %s", cfg.Workers, cfg.StealthMs, cfg.OutputPath)
+	}
 
 	startTime := time.Now()
 

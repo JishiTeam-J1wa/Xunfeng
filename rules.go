@@ -158,6 +158,9 @@ var (
 		"vpn", "proxy", "内网", "入职", "手册", "内部", "intranet", "tunnel",
 		"shadowsocks", "v2ray", "clash", "wireguard", "openvpn",
 		"账号", "密码", "口令", "密钥", "凭据", "credential",
+		"绝密", "机密", "秘密", "涉密", "密级", "解密",
+		"政务", "红头", "公文", "机关",
+		"决策", "决议", "纪要", "批示", "常委",
 	}
 
 	// sensitiveFilenames - 敏感文件名 (更全面)
@@ -404,6 +407,23 @@ var (
 			pattern:  regexp.MustCompile(`(?i)(手册|manual|运维手册|操作手册|部署手册|技术手册).*?(?:账号|密码|登录|地址|配置|vpn|代理|内网)`),
 			keywords: []string{"手册", "manual", "运维手册", "操作手册"},
 			minLen:   10,
+		},
+
+		// ========== 政务/机密/内部决策 ==========
+		"ClassifiedDoc": {
+			pattern:  regexp.MustCompile(`(?i)(绝密|机密|秘密|保密|涉密|密级|解密|工作秘密|商业秘密)`),
+			keywords: []string{"绝密", "机密", "秘密", "保密", "涉密", "密级", "解密", "工作秘密", "商业秘密"},
+			minLen:   4,
+		},
+		"GovernmentDoc": {
+			pattern:  regexp.MustCompile(`(?i)(政务|政府机关|行政机关|红头文件|红头|公文|机关单位|党委|政府文件)`),
+			keywords: []string{"政务", "政府机关", "行政机关", "红头文件", "红头", "公文", "机关单位", "党委", "政府文件"},
+			minLen:   4,
+		},
+		"InternalDecision": {
+			pattern:  regexp.MustCompile(`(?i)(内部决策|内部决定|内部决议|会议纪要|会议决议|决策意见|批示|批示件|常委会|常委会议|领导班子|重要决定)`),
+			keywords: []string{"内部决策", "内部决定", "内部决议", "会议纪要", "会议决议", "决策意见", "批示", "批示件", "常委会", "常委会议", "领导班子", "重要决定"},
+			minLen:   4,
 		},
 	}
 

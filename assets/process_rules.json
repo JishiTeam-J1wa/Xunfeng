@@ -3986,5 +3986,37 @@
       "imfsrv.exe",
       "imfsrvwsc.exe"
     ]
+  },
+  {
+    "name": "金山卫士",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:ksafe\\.exe)\\b",
+    "processes": [
+      "ksafe.exe"
+    ]
+  },
+  {
+    "name": "AVG",
+    "category": "AV",
+    "pattern": "(?i)\\b(?:AVGCSRVX)\\b",
+    "processes": [
+      "AVGCSRVX"
+    ]
+  },
+  {
+    "name": "finalshell终端管理",
+    "category": "Tool",
+    "pattern": "(?i)\\b(?:finalshell\\.exe)\\b",
+    "processes": [
+      "finalshell.exe"
+    ]
+  },
+  {
+    "name": "数据库管理",
+    "category": "Tool",
+    "pattern": "(?i)\\b(?:navicat\\.exe)\\b",
+    "processes": [
+      "navicat.exe"
+    ]
   }
 ]

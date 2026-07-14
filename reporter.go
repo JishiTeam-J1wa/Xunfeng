@@ -133,8 +133,11 @@ var categorySeverity = map[string]Severity{
 	"GitCred":       SeverityMedium,
 	"DjangoSecret":  SeverityMedium,
 	"LaravelKey":    SeverityMedium,
-	"VPNConfig":     SeverityMedium,
-	"ProxyConfig":   SeverityMedium,
+	"VPNConfig":        SeverityMedium,
+	"ProxyConfig":      SeverityMedium,
+	"ClassifiedDoc":    SeverityMedium,
+	"GovernmentDoc":    SeverityMedium,
+	"InternalDecision": SeverityMedium,
 
 	// Low - 可能有用的信息
 	"SensitiveExt":        SeverityLow,

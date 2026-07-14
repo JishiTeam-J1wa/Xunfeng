@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"strings"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -28,6 +29,12 @@ var (
 
 	// 进度状态
 	progressing atomic.Bool
+
+	// 稽核模式（真实进度条）
+	jiwaMode              atomic.Bool
+	fileScanning          atomic.Bool
+	totalFilesForProgress atomic.Uint64
+	progressStartTime     time.Time
 
 	// 颜色
 	cyan    = color.New(color.FgCyan).SprintFunc()
@@ -60,7 +67,7 @@ func consolePrint(msg string) {
 	}
 	stdoutMu.Lock()
 	// 如果当前有进度条在显示，先清空该行再输出发现，避免交错
-	if progressing.Load() {
+	if progressing.Load() || jiwaMode.Load() {
 		fmt.Fprint(stdoutWriter, "\r\033[K")
 	}
 	fmt.Fprintln(stdoutWriter, msg)
@@ -223,6 +230,86 @@ func printProgress(scanned, findings uint64) {
 		cyan(fmt.Sprintf("%d", scanned)),
 		magenta(fmt.Sprintf("%d", findings)),
 		"          ")
+	stdoutWriter.Flush()
+	stdoutMu.Unlock()
+}
+
+// setJiwaMode 启用/禁用稽核模式
+func setJiwaMode(enabled bool) {
+	jiwaMode.Store(enabled)
+}
+
+// setTotalFilesForProgress 设置稽核模式下的总文件数
+func setTotalFilesForProgress(total uint64) {
+	totalFilesForProgress.Store(total)
+	progressStartTime = time.Now()
+}
+
+// renderProgressBar 生成稽核模式下的真实进度条字符串
+func renderProgressBar(scanned, findings uint64) string {
+	total := totalFilesForProgress.Load()
+	if total == 0 {
+		return fmt.Sprintf("\r[*] Progress: %s files scanned | %s findings%s",
+			cyan(fmt.Sprintf("%d", scanned)),
+			magenta(fmt.Sprintf("%d", findings)),
+			"          ")
+	}
+
+	percent := float64(scanned) / float64(total)
+	if percent > 1.0 {
+		percent = 1.0
+	}
+
+	barWidth := 30
+	filled := int(percent * float64(barWidth))
+	if filled > barWidth {
+		filled = barWidth
+	}
+	bar := strings.Repeat("█", filled) + strings.Repeat("░", barWidth-filled)
+
+	elapsed := time.Since(progressStartTime)
+	var etaStr string
+	if scanned > 0 && scanned < total {
+		eta := time.Duration(float64(elapsed) / float64(scanned) * float64(total-scanned))
+		etaStr = fmt.Sprintf(" | ETA: %s", eta.Round(time.Second))
+	} else {
+		etaStr = ""
+	}
+
+	speed := float64(scanned) / elapsed.Seconds()
+	if speed < 0.1 {
+		speed = 0.1
+	}
+
+	return fmt.Sprintf("\r[%s] %s | %s/%s files | %s findings | %.1f f/s%s%s",
+		green(bar),
+		cyan(fmt.Sprintf("%3.0f%%", percent*100)),
+		cyan(fmt.Sprintf("%d", scanned)),
+		cyan(fmt.Sprintf("%d", total)),
+		magenta(fmt.Sprintf("%d", findings)),
+		speed,
+		etaStr,
+		"          ")
+}
+
+// printProgressBar 在稽核模式下刷新真实进度条
+func printProgressBar(scanned, findings uint64) {
+	if !jiwaMode.Load() || silent {
+		return
+	}
+	stdoutMu.Lock()
+	fmt.Fprint(stdoutWriter, renderProgressBar(scanned, findings))
+	stdoutWriter.Flush()
+	stdoutMu.Unlock()
+}
+
+// clearProgressBar 清除当前进度条行（用于扫描结束时）
+func clearProgressBar() {
+	if !jiwaMode.Load() || silent {
+		return
+	}
+	stdoutMu.Lock()
+	fmt.Fprint(stdoutWriter, "\r\033[K")
 	stdoutWriter.Flush()
 	stdoutMu.Unlock()
 }
