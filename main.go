@@ -44,6 +44,9 @@ const (
 )
 
 var (
+	// Version 由编译时 ldflags 注入，例如 -X main.Version=3.0.0
+	Version = "dev"
+
 	outputFile   *os.File
 	outputWriter *bufio.Writer
 
@@ -2204,11 +2207,8 @@ func printResults(cfg *Config, elapsed time.Duration) {
 	consoleFlush()
 }
 
-// ==================== Main ====================
-
-func main() {
-	cfg := parseConfig()
-
+// runWithConfig 根据配置执行一次完整扫描
+func runWithConfig(cfg *Config) error {
 	// 启动后台终端刷新，避免每条消息都 flush 导致卡顿
 	startConsoleWriter()
 
@@ -2218,12 +2218,11 @@ func main() {
 	printSystemInfo()
 
 	if !checkEnvironment(cfg) {
-		return
+		return fmt.Errorf("environment check failed")
 	}
 
 	if err := setupOutput(cfg.OutputPath); err != nil {
-		fmt.Printf("[!] Failed to create output: %v\n", err)
-		return
+		return fmt.Errorf("failed to create output: %w", err)
 	}
 	defer outputFile.Close()
 	defer func() {
@@ -2236,7 +2235,7 @@ func main() {
 
 	roots, singleFile := resolveTargets(cfg.TargetPath)
 	if roots == nil && singleFile == "" && cfg.TargetPath != "" {
-		return
+		return fmt.Errorf("cannot resolve target: %s", cfg.TargetPath)
 	}
 
 	if cfg.Jiwa {
@@ -2251,4 +2250,15 @@ func main() {
 	runFileSystemScan(cfg, roots, singleFile)
 
 	printResults(cfg, time.Since(startTime))
+	return nil
+}
+
+// ==================== Main ====================
+
+func main() {
+	cfg := parseConfig()
+	if err := runWithConfig(cfg); err != nil {
+		fmt.Printf("[!] %v\n", err)
+		os.Exit(1)
+	}
 }
