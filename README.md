@@ -149,6 +149,7 @@ go build -ldflags="-s -w" -o xunfeng .
 | `-skip-debug` | 跳过调试器检测 | false |
 | `-yara-rules` | YARA 规则文件或目录（需 `-tags yara` 编译，见下文） | 空 |
 | `-jiwa` | 稽核模式：预统计文件数，显示进度条与 ETA | false |
+| `-nodir` | 完整扫描：不排除任何目录 | false |
 
 ### 基础用法
 
@@ -375,15 +376,18 @@ XunFeng 可以编译成动态库或 Go Plugin，作为你自研平台的一个�
 
 ### 自动排除的目录
 
-为提升扫描速度并减少低权限下的报错，自动跳过：
+默认**只排除纯系统目录**，不按目录名排除任何位置——`node_modules`、`.git`、`tmp`、`logs`、`ProgramData`、`/var/lib`、`/boot`、`~/Library`、`Program Files`、其他用户家目录等全部纳入扫描（这些位置常有高价值数据或攻击者驻留痕迹，无权限的条目遍历时自动跳过）：
 
-- **通用**：`node_modules`、`vendor`、`.git`、`.svn`、`__pycache__`
-- **IDE**：`.idea`、`.vscode`
-- **缓存**：`cache`、`.cache`、`tmp`、`temp`、`logs`
-- **构建产物**：`dist`、`build`、`.next`、`target`
-- **macOS**：`/System`、`/Library/Caches`、`~/Library/Caches`
-- **Linux**：`/proc`、`/sys`、`/dev`、`/run`
-- **Windows**：`Windows\System32`、`Windows\SysWOW64`、`ProgramData`、`$Recycle.Bin`、`Recovery`、其他用户目录
+- **macOS**：`/System`、`/Library`、`/usr`、`/bin`、`/sbin`、`/opt`
+- **Linux**：`/proc`、`/sys`、`/dev`、`/run`、`/usr`、`/lib`、`/var/cache` 等
+- **Windows**：`C:\Windows`、`$Recycle.Bin`、`Recovery`、`Users\Default`
+
+需要彻底放开时加 `-nodir`：不排除任何目录，连 `/proc`、`/sys`、`/dev` 等伪文件系统也一并遍历（注意：读取伪文件系统可能产生大量无效数据）。
+
+```bash
+# 完整扫描模式：连系统目录一起扫
+./xunfeng -nodir -p /target
+```
 
 ---
 
@@ -478,7 +482,7 @@ XunFeng 可以编译成动态库或 Go Plugin，作为你自研平台的一个�
 | Linux | 当前用户 | root |
 | Windows | 当前用户 | Administrator |
 
-XunFeng 已针对**低权限环境**优化：默认跳过系统目录和其他用户目录，普通用户也能完整扫描自身数据，不会因权限不足而中断。
+XunFeng 已针对**低权限环境**优化：默认跳过系统目录，遍历时无权限的条目自动跳过不中断——普通用户会完整扫描自身数据，管理员/root 则可以覆盖其他用户的家目录（其中常有高价值数据）。
 
 ### macOS 特殊说明
 

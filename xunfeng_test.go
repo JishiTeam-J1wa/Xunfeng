@@ -650,12 +650,28 @@ func TestHighValueExtensions(t *testing.T) {
 // ==================== 排除规则测试 ====================
 
 func TestExcludedDirs(t *testing.T) {
-	expected := []string{"node_modules", ".git", "vendor", "__pycache__"}
-	for _, dir := range expected {
-		if _, ok := excludedDirs[dir]; !ok {
-			t.Errorf("excludedDirs should contain %s", dir)
+	// 默认不按目录名排除任何位置：node_modules/.git/tmp/logs 等均纳入扫描
+	if len(excludedDirs) != 0 {
+		t.Errorf("excludedDirs should be empty by default, got %d entries", len(excludedDirs))
+	}
+	for _, dir := range []string{"node_modules", ".git", "tmp", "temp", "logs", "vendor", "venv"} {
+		if _, ok := excludedDirs[dir]; ok {
+			t.Errorf("excludedDirs should NOT contain %s", dir)
 		}
 	}
+}
+
+func TestInitExclusionsNoDir(t *testing.T) {
+	// -nodir 模式：不排除任何目录
+	initExclusions(true)
+	if len(excludedDirs) != 0 {
+		t.Errorf("noDir mode should clear excludedDirs, got %d entries", len(excludedDirs))
+	}
+	if len(excludedPaths) != 0 {
+		t.Errorf("noDir mode should have no excluded paths, got %v", excludedPaths)
+	}
+	// 恢复默认排除，避免影响其他测试
+	initExclusions(false)
 }
 
 // ==================== 集成测试 ====================

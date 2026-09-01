@@ -78,14 +78,9 @@ var (
 	}
 
 	// 排除目录 (使用数组加速小集合查找)
-	excludedDirsList = []string{
-		"node_modules", "vendor", ".git", ".svn",
-		"__pycache__", ".idea", ".vscode", "cache",
-		".cache", "Cache", "tmp", "temp", "logs",
-		".npm", ".yarn", "dist", "build", ".next",
-		"coverage", ".pytest_cache", "venv", ".venv",
-		"target", "Pods", "DerivedData",
-	}
+	// 默认不按目录名排除任何位置：node_modules/.git/tmp/logs 等都可能含有
+	// 高价值数据或攻击者驻留痕迹。如需排除请自行用 -p 限定扫描范围。
+	excludedDirsList = []string{}
 	excludedDirs  = make(map[string]struct{}, 30)
 	excludedPaths []string
 
@@ -391,110 +386,42 @@ func antiDebug() bool {
 
 // ==================== 工具函数 ====================
 
-func initExclusions() {
-	usr, _ := user.Current()
-	home := ""
-	if usr != nil {
-		home = usr.HomeDir
-	}
-
-	// 当前用户目录下的常见大目录
-	if home != "" {
-		common := []string{
-			filepath.Join(home, "go"), filepath.Join(home, ".go"),
-			filepath.Join(home, "node_modules"), filepath.Join(home, ".npm"),
-			filepath.Join(home, ".nvm"), filepath.Join(home, ".cargo"),
-			filepath.Join(home, ".rustup"), filepath.Join(home, ".local/share"),
-			filepath.Join(home, ".cache"), filepath.Join(home, "Cache"),
-		}
-		excludedPaths = append(excludedPaths, common...)
+// initExclusions 初始化目录排除规则。noDir 为 true 时不排除任何目录
+// （完整扫描模式，包含 /proc /sys /dev 等伪文件系统）。
+//
+// 默认模式也只排除纯系统目录；用户数据目录（含其他用户家目录、
+// node_modules/.git/tmp/logs 等）全部纳入扫描——其中常有高价值数据，
+// 无权限的条目会在遍历时自然跳过，不会产生报错噪音。
+func initExclusions(noDir bool) {
+	if noDir {
+		excludedDirs = make(map[string]struct{}, 0)
+		excludedPaths = nil
+		return
 	}
 
 	switch runtime.GOOS {
 	case "darwin":
 		excludedPaths = append(excludedPaths,
-			"/System", "/Library", "/private",
-			"/usr", "/bin", "/sbin", "/opt", "/var",
-			"/Applications", "/Volumes",
+			"/System", "/Library",
+			"/usr", "/bin", "/sbin", "/opt",
 		)
-		if home != "" {
-			excludedPaths = append(excludedPaths, filepath.Join(home, "Library"))
-		}
 	case "linux":
 		excludedPaths = append(excludedPaths,
-			"/proc", "/sys", "/dev", "/run", "/boot", "/var/lib", "/var/cache",
-			"/snap", "/usr", "/lib", "/lib64", "/bin", "/sbin", "/opt",
+			"/proc", "/sys", "/dev", "/run", "/var/cache",
+			"/usr", "/lib", "/lib64", "/bin", "/sbin", "/opt",
 		)
 	case "windows":
-		// 低权限下这些目录几乎必然触发访问拒绝，直接排除
 		sysRoot := os.Getenv("SystemRoot")
 		if sysRoot == "" {
 			sysRoot = `C:\Windows`
 		}
 		excludedPaths = append(excludedPaths,
 			sysRoot,
-			`C:\Windows\System32`,
-			`C:\Windows\SysWOW64`,
-			`C:\Program Files`, `C:\Program Files (x86)`,
-			`C:\ProgramData`,
 			`C:\$Recycle.Bin`,
 			`C:\Recovery`,
-			`C:\PerfLogs`,
-			`C:\Users\All Users`,
-			`C:\Users\Default`,
-			`C:\Users\Public`,
+			`C:\Users\All Users`, // 联接点，指向 C:\ProgramData
+			`C:\Users\Default`,   // 模板配置文件，无真实用户数据
 		)
-		if home != "" {
-			excludedPaths = append(excludedPaths, filepath.Join(home, "AppData\\Local\\Microsoft"))
-		}
-	}
-
-	// 跨平台：排除其他用户的家目录（低权限下访问会被拒）
-	excludeOtherUserHomes(home)
-}
-
-// excludeOtherUserHomes 排除非当前用户的家目录/用户配置目录
-func excludeOtherUserHomes(currentHome string) {
-	if currentHome == "" {
-		return
-	}
-	switch runtime.GOOS {
-	case "windows":
-		// 排除 C:\Users 下除当前用户以外的目录
-		usersDir := `C:\Users`
-		entries, err := os.ReadDir(usersDir)
-		if err != nil {
-			return
-		}
-		currentUser := strings.ToLower(filepath.Base(currentHome))
-		for _, entry := range entries {
-			if !entry.IsDir() {
-				continue
-			}
-			name := strings.ToLower(entry.Name())
-			if name == currentUser || name == "public" || name == "default" || name == "all users" {
-				continue
-			}
-			excludedPaths = append(excludedPaths, filepath.Join(usersDir, entry.Name()))
-		}
-	case "darwin", "linux":
-		// 排除 /home 和 /Users 下除当前用户以外的目录
-		for _, base := range []string{"/home", "/Users"} {
-			entries, err := os.ReadDir(base)
-			if err != nil {
-				continue
-			}
-			currentUser := filepath.Base(currentHome)
-			for _, entry := range entries {
-				if !entry.IsDir() {
-					continue
-				}
-				if entry.Name() == currentUser {
-					continue
-				}
-				excludedPaths = append(excludedPaths, filepath.Join(base, entry.Name()))
-			}
-		}
 	}
 }
 
@@ -1962,6 +1889,7 @@ type Config struct {
 	SkipDebug     bool
 	YaraRulesPath string
 	Jiwa          bool // 稽核模式：显示详细进度条和阶段信息
+	NoDir         bool // 完整扫描模式：不排除任何目录
 }
 
 // parseConfig 解析命令行参数
@@ -1978,6 +1906,7 @@ func parseConfig() *Config {
 	flag.BoolVar(&cfg.SkipDebug, "skip-debug", false, "Skip debug check")
 	flag.StringVar(&cfg.YaraRulesPath, "yara-rules", "", "YARA rule file/directory (requires yara build tag)")
 	flag.BoolVar(&cfg.Jiwa, "jiwa", false, "稽核模式：显示详细进度条和阶段信息")
+	flag.BoolVar(&cfg.NoDir, "nodir", false, "完整扫描：不排除任何目录")
 	flag.Parse()
 
 	// 根据格式调整输出文件扩展名
@@ -2231,7 +2160,7 @@ func runWithConfig(cfg *Config) error {
 	}()
 	defer closeYaraScanner()
 
-	initExclusions()
+	initExclusions(cfg.NoDir)
 
 	roots, singleFile := resolveTargets(cfg.TargetPath)
 	if roots == nil && singleFile == "" && cfg.TargetPath != "" {
