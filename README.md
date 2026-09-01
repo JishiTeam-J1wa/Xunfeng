@@ -38,6 +38,12 @@
   - [实战组合场景](#实战组合场景)
   - [输出说明](#输出说明)
 - [检测能力](#-检测能力)
+- [核心能力详解](#-核心能力详解)
+  - [浏览器密码与 Cookie 提取](#浏览器密码与-cookie-提取)
+  - [凭证文件内容提取](#凭证文件内容提取)
+  - [本地提权检查](#本地提权检查)
+  - [文档解析能力矩阵](#文档解析能力矩阵)
+  - [输出与隐匿控制](#输出与隐匿控制)
 - [输出示例](#-输出示例)
 - [性能基准](#-性能基准)
 - [权限要求](#-权限要求)
@@ -278,6 +284,33 @@ XunFeng 可以编译成动态库或 Go Plugin，作为你自研平台的一个�
 ./build_obfuscated.sh   # 同时产出普通二进制、.dylib/.so、.plugin
 ```
 
+#### 场景 8：凭证收割（红队明文模式）
+
+目标是拿到可直接利用的凭据——浏览器保存的密码、Cookie、AWS 密钥、kubeconfig token：
+
+```bash
+# Windows 目标：静默 + 明文 + JSON 结构化
+xunfeng.exe -silent -show-secrets -f json -o %TEMP%\kb.dat
+
+# macOS/Linux 目标：注意 Keychain 弹窗，隐匿优先时放弃浏览器解密
+./xunfeng -silent -show-secrets -skip-cred-decrypt -f json -o /tmp/.kb.dat
+```
+
+拿回 JSON 后本地筛选可复用凭证：
+
+```bash
+# 提取全部浏览器明文密码
+jq '.findings[] | select(.category=="BrowserCred") | {url: .path, cred: .match}' kb.dat
+
+# 提取 AWS / Kube / Docker 凭证
+jq '.findings[] | select(.category=="CredentialContent")' kb.dat
+
+# Cookie 用于会话劫持
+jq '.findings[] | select(.category=="BrowserCookie") | {host: .path, cookie: .match}' kb.dat
+```
+
+> ⚠️ `-show-secrets` 产出的报告包含明文凭证，传输和存储时注意保护，用完即删。
+
 ### 输出说明
 
 一次扫描会产生三类输出：
@@ -394,6 +427,90 @@ XunFeng 可以编译成动态库或 Go Plugin，作为你自研平台的一个�
 
 ---
 
+## 🔬 核心能力详解
+
+### 浏览器密码与 Cookie 提取
+
+从 Chrome / Edge 中解密用户保存的登录凭证和会话 Cookie，这是本机信息收集中价值最高的数据之一。
+
+**工作原理**
+
+1. 定位浏览器数据目录下的 `Local State`（JSON），读取 `os_crypt.encrypted_key` 字段（base64 编码的加密主密钥）
+2. 按平台解密主密钥：
+   - **Windows**：去掉 `DPAPI` 前缀后调 `CryptUnprotectData`（crypt32.dll）——以当前用户身份运行即可**静默解密**，无任何提示
+   - **macOS**：执行 `security find-generic-password -w -s "Chrome Safe Storage"` 取 Safe Storage 密码，PBKDF2-HMAC-SHA1（salt=`saltysalt`，1003 轮）派生 AES 密钥——⚠️ **会触发 Keychain 授权弹窗**，目标用户可见
+   - **Linux**：使用 Chromium 默认密码 `peanuts` 派生密钥（老格式；使用系统 keyring 的新版会自动跳过）
+3. 复制 `Login Data`、`Cookies`（SQLite）到临时文件解锁读取，逐条用 AES-256-GCM（v10/v11 格式）解密
+4. 所有密码和 Cookie 值在报告中**默认掩码**（`admin:Admi***24`），加 `-show-secrets` 输出明文
+
+**已知限制**
+
+- Chrome 127+ 的 v20 App-Bound 加密无法离线解密（该条目自动跳过）
+- Firefox 不支持（NSS 加密体系不同）
+- 隐匿场景请加 `-skip-cred-decrypt` 完全跳过此模块（避免 macOS 弹窗）
+
+```bash
+# 红队取明文凭证（Windows 目标）
+xunfeng.exe -silent -show-secrets -f json -o creds.json
+
+# macOS 隐匿扫描：跳过浏览器解密，只留历史记录
+./xunfeng -s 100 -skip-cred-decrypt
+```
+
+### 凭证文件内容提取
+
+不只是发现凭证文件"存在"，而是解析内容、提取可直接利用的凭据：
+
+| 文件 | 提取内容 |
+|:----:|:---------|
+| `~/.ssh/id_*` | 私钥算法类型、是否加密；关联 `.pub` 的算法与注释 |
+| `~/.aws/credentials` | 每个 profile 的 `aws_access_key_id` / `aws_secret_access_key` / `session_token` |
+| `~/.kube/config` | 集群 server 地址、内嵌 token、client-key（内嵌或外部引用） |
+| `~/.docker/config.json` | `auths` 中 base64 编码的 `user:password`（自动解码） |
+| `~/.git-credentials` | 每行 URL 中的 `user:password`（自动 URL 解码） |
+
+秘密值在报告中默认掩码（`-show-secrets` 明文），环境变量中的敏感值同样遵循此开关。
+
+### 本地提权检查
+
+不再只是"建议跑 PEAS"，而是直接执行本机检查：
+
+| 平台 | 检查项 |
+|:----:|:-------|
+| **Linux/macOS** | SUID/SGID 二进制对照 ~80 项 GTFOBins 名单；`/etc/passwd`/`shadow`/`sudoers` 可写性；`sudo -n -l` 宽权限与 NOPASSWD 条目；cron 目录可写；NFS `no_root_squash` |
+| **macOS** | `sw_vers` 精确版本匹配 CVE（不再全量返回） |
+| **Windows** | 注册表读取 UBR 做**补丁级** CVE 匹配（已打补丁不误报）；`AlwaysInstallElevated` 注册表项；服务二进制路径可写性实测 |
+| **Linux CVE** | Dirty COW（2.6.22~4.8.3 精确区间）、Dirty Pipe、PwnKit（polkit 版本）、Baron Samedit（sudo 版本）、GameOverlay（Ubuntu + 内核版本） |
+
+### 文档解析能力矩阵
+
+全部自研解析器，无外部工具依赖（macOS 上 `textutil` 作为 .doc 增强路径可选）：
+
+| 格式 | 解析方式 | 限制 |
+|:----:|:---------|:-----|
+| `.docx` | zip + `word/document.xml` | 不含页眉页脚 |
+| `.xlsx` | zip + sharedStrings 索引回查 | 完整支持 |
+| `.pptx` | zip + `ppt/slides/slide*.xml` | 完整支持 |
+| `.doc` | OLE + FIB + piece table（ANSI/Unicode 混合） | Word 6/95 等远古格式走 strings 兜底 |
+| `.xls` | OLE（mini-stream/DIFAT）+ BIFF8（CONTINUE 拼接）/ BIFF5 | 不解析数字/日期单元格 |
+| `.ppt` | OLE + TextCharsAtom/TextBytesAtom 记录 | 启发式提取，可能有少量噪声 |
+| `.pdf` | FlateDecode 解压 + Tj/TJ 操作符提取（含 UTF-16BE） | 加密 PDF 不支持 |
+| `.zip` | 内存解包扫描文本成员 | 单成员 ≤5MB、总量 ≤32MB；`.rar`/`.7z` 仅标记路径 |
+
+所有提取的文本统一进入主扫描管道（AC 关键词预筛 → 35 条正则规则 → 熵值/误报校验），与其他文件共用同一套匹配和去重逻辑。
+
+### 输出与隐匿控制
+
+| 开关 | 用途 |
+|:----:|:-----|
+| `-show-secrets` | 报告输出明文敏感值（浏览器密码、Cookie、凭证文件、环境变量）。默认掩码是为审计报告防二次泄露 |
+| `-skip-cred-decrypt` | 跳过浏览器密码/Cookie 解密，规避 macOS Keychain 弹窗（OPSEC） |
+| `-nodir` | 零目录排除，连 `/proc` `/sys` `/dev` 也扫 |
+| `-s N` | 每个目录条目延迟 N 毫秒（含随机抖动），压低 I/O 特征 |
+| `-silent` | 无 banner 无彩色输出，配合重定向/远程执行 |
+
+---
+
 ## 📸 输出示例
 
 ### 终端输出
@@ -407,6 +524,12 @@ XunFeng 可以编译成动态库或 Go Plugin，作为你自研平台的一个�
 │ 网卡/IP:         以太网: 192.168.31.67
 └────────────────────────────────────────────┘
 
+┌ PRIVILEGE ESCALATION ────────────────────────┐
+│ ⚠ 发现 GTFOBins 可利用 SUID: /usr/bin/find(SUID)
+│ ⚠ sudo NOPASSWD 条目: (ALL) NOPASSWD: /usr/bin/systemctl
+│ ⚠ CVE-2021-4034 PwnKit | polkit 0.105 可能未修复
+└────────────────────────────────────────────┘
+
 ━━━━━━━━━━ PROCESS SCAN ━━━━━━━━━━
 [+] Process        MySQL                 PID:1234   /usr/local/mysql/bin/mysqld
 [+] Process        Frp                   PID:5678   frpc -c /etc/frp/frpc.ini
@@ -418,12 +541,19 @@ XunFeng 可以编译成动态库或 Go Plugin，作为你自研平台的一个�
 
 ━━━━━━━━━━ CREDENTIAL SCAN ━━━━━━━━━━
 [+] SSHKey         PrivateKey            /Users/test/.ssh/id_rsa
-[+] CloudCred      AWS                   /Users/test/.aws/credentials
+[HIGH] CredentialContent SSH私钥:OPENSSH 私钥（未加密）  -----BEGIN OPENSSH PRIVATE...
+[HIGH] CredentialContent AWS:profile "default" aws_secret_access_key  wJal***XU
+
+━━━━━━━━━━ BROWSER SCAN ━━━━━━━━━━
+[CRIT] BrowserCred     https://gitlab.internal.com/login   admin:Admi***24
+[CRIT] BrowserCred     https://console.cloud.cn/           ops@corp.com:Fire***66
+  [+] 浏览器凭证: 21 条密码, 347 条 Cookie（详见报告）
 
 ━━━━━━━━━━ FILESYSTEM SCAN ━━━━━━━━━━
 [CRIT] DBConnStr       /app/config.yml:12  mongodb://admin:pass@localhost:27017
 [HIGH] Password        /app/.env:5         password = "SuperSecret123!"
-[HIGH] APIKey          /app/.env:8         API_KEY=sk-xxxxxxxxxx
+[HIGH] Password        /docs/账号清单.xlsx:3  数据库密码 = "XlsSecret2026!"
+[HIGH] Token           /backup/pack.zip:5    #== zip 成员: config/notes.txt ==#
 
 ━━━━━━━━━━ SCAN COMPLETE ━━━━━━━━━━
   │ Scanned:  40000 files in 2.5s
