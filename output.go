@@ -13,7 +13,9 @@ import (
 )
 
 var (
-	silent bool
+	silent          bool
+	showSecrets     bool // -show-secrets：报告中不做掩码，输出明文敏感值
+	skipCredDecrypt bool // -skip-cred-decrypt：跳过浏览器密码/Cookie 解密（避免 macOS Keychain 弹窗）
 
 	// 标准输出缓冲与锁
 	stdoutWriter = bufio.NewWriter(os.Stdout)
@@ -214,7 +216,7 @@ func printBanner() {
                                             %s
 `
 	stdoutMu.Lock()
-	fmt.Fprintf(stdoutWriter, cyan(banner), yellow("v3.0 by J4Team"))
+	fmt.Fprintf(stdoutWriter, cyan(banner), yellow("v"+Version+" by J4Team"))
 	fmt.Fprintln(stdoutWriter)
 	stdoutWriter.Flush()
 	stdoutMu.Unlock()

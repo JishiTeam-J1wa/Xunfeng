@@ -9,7 +9,7 @@
 
 set -e
 
-VERSION="3.0.0"
+VERSION="4.0.0"
 OUTPUT_DIR="build"
 APP_NAME="xunfeng"
 USE_CGO="${USE_CGO:-0}"

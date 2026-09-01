@@ -85,6 +85,10 @@ func NewReporter() *Reporter {
 			"Email":          20,
 			"WeakPassword":        30,
 			"CredentialPair":      50,
+			"BrowserCred":         50,
+			"BrowserCookie":       100,
+			"CredentialContent":   50,
+			"PrivescCheck":        30,
 			"WritableDirCritical": 10,
 			"WritableDirHigh":     30,
 			"WritableDirMedium":   30,
@@ -110,6 +114,10 @@ var categorySeverity = map[string]Severity{
 	"C2Proc":         SeverityCritical,
 	"CredentialTool": SeverityCritical,
 
+	// 浏览器凭证提取
+	"BrowserCred":   SeverityCritical,
+	"BrowserCookie": SeverityHigh,
+
 	// High - 敏感凭证 / 渗透工具
 	"Password":        SeverityHigh,
 	"Secret":          SeverityHigh,
@@ -124,6 +132,10 @@ var categorySeverity = map[string]Severity{
 	"CredentialPair":  SeverityHigh,
 	"WeakPassword":    SeverityMedium,
 	"Email":           SeverityInfo,
+
+	// 凭证内容提取 / 本地提权检查
+	"CredentialContent": SeverityHigh,
+	"PrivescCheck":      SeverityHigh,
 
 	// Medium - 配置/凭证文件
 	"SensitiveFile": SeverityMedium,

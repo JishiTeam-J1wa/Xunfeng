@@ -11,11 +11,11 @@
 
 # XunFeng 寻风
 
-**高性能跨平台敏感信息扫描工具**
+**主机敏感信息收集工具**
 
 专为红队信息收集、内网渗透与安全审计设计
 
-[![Version](https://img.shields.io/badge/Version-3.0.0-blue.svg)](https://github.com/JishiTeam-J1wa/Xunfeng/releases)
+[![Version](https://img.shields.io/badge/Version-4.0.0-blue.svg)](https://github.com/JishiTeam-J1wa/Xunfeng/releases)
 [![Go](https://img.shields.io/badge/Go-1.25+-00ADD8.svg)](https://go.dev/)
 [![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey.svg)](#-跨平台支持)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
@@ -57,7 +57,7 @@ XunFeng（寻风）是一个**单二进制、零依赖、开箱即用**的本机
 - 盘点正在运行的**进程**（识别杀软/EDR/远控/隧道/渗透工具）
 - 检查**网络连接**中的可疑端口外连
 - 翻找 **SSH 密钥、云凭证、Docker/K8s 配置**
-- 提取**环境变量、Shell 历史、浏览器历史**里的敏感信息
+- 提取**环境变量、Shell 历史、浏览器保存的密码与 Cookie**里的敏感信息
 - 找出**可写可执行目录**（持久化/劫持落地点）
 - 全盘扫描**文件内容**中的密码、Token、云密钥、数据库连接串
 - 按系统版本给出**提权漏洞建议**
@@ -69,7 +69,7 @@ XunFeng（寻风）是一个**单二进制、零依赖、开箱即用**的本机
 | **内网渗透** | 发现可写 PATH/启动目录，为持久化和横向移动寻找落地点 |
 | **安全审计** | 批量检查代码/配置文件中的密码、Token、云密钥 |
 | **失陷主机排查** | 识别 Cobalt Strike / 远控 / 隧道 / 挖矿进程 |
-| **敏感文件梳理** | 提取 Office 文档中的敏感内容，标记压缩包、数据库等敏感文件位置 |
+| **敏感文件梳理** | 提取 Office 文档、PDF、ZIP 包内的敏感内容，标记数据库等敏感文件位置 |
 
 ---
 
@@ -78,7 +78,8 @@ XunFeng（寻风）是一个**单二进制、零依赖、开箱即用**的本机
 - 🚀 **极速扫描**：Aho-Corasick 多模式匹配 + 并发遍历，实测 40 万文件约 34 秒
 - 🧠 **多维检测**：进程、网络、凭证、环境变量、Shell 历史、浏览器、可写目录、文件系统
 - 🛡️ **进程识别**：内置 360+ 条进程规则、覆盖 1,400+ 进程特征（杀软/EDR/安全工具/远控/渗透工具）
-- 📄 **Office 支持**：原生解析 `.docx/.xlsx/.pptx`，兼容旧格式 `.doc/.xls/.ppt`
+- 📄 **文档解析**：原生解析 `.docx/.xlsx/.pptx` 与旧格式 `.doc/.xls/.ppt`（自研 OLE/BIFF/FIB 解析器），另支持 `.pdf` 文本流提取与 `.zip` 解包扫描
+- 🔑 **浏览器凭证**：提取 Chrome/Edge 保存的密码与 Cookie（Windows DPAPI / macOS Keychain / Linux 自动适配）
 - 🔎 **补充模式**：独立提取 IPv4、URL、凭据对（`admin:admin123`）、弱口令、邮箱
 - 📂 **可写目录**：真实写入测试，识别启动目录、PATH 目录、公共目录等可写可执行路径
 - 🧬 **YARA 可选**：支持 `-tags yara` 集成 YARA 规则扫描文件与进程内存
@@ -150,6 +151,8 @@ go build -ldflags="-s -w" -o xunfeng .
 | `-yara-rules` | YARA 规则文件或目录（需 `-tags yara` 编译，见下文） | 空 |
 | `-jiwa` | 稽核模式：预统计文件数，显示进度条与 ETA | false |
 | `-nodir` | 完整扫描：不排除任何目录 | false |
+| `-show-secrets` | 报告中输出明文敏感值（默认掩码） | false |
+| `-skip-cred-decrypt` | 跳过浏览器密码/Cookie 解密（避免 macOS Keychain 弹窗） | false |
 
 ### 基础用法
 
@@ -302,12 +305,12 @@ XunFeng 可以编译成动态库或 Go Plugin，作为你自研平台的一个�
 |:----:|:---------|:---------|
 | **进程扫描** | 数据库、远控 RAT、代理隧道、渗透工具、杀软/EDR | 识别已运行木马、已知工具 |
 | **网络扫描** | 可疑端口外连与监听（4444/5555/1080/3389/5900 等） | 发现活跃后门通道 |
-| **凭证扫描** | SSH 密钥、云凭证、Docker/K8s 配置文件 | 横向移动凭据位置 |
+| **凭证扫描** | SSH 密钥、云凭证、Docker/K8s 配置——提取内容并掩码展示 | 横向移动凭据 |
 | **环境变量** | `PASSWORD`/`SECRET`/`TOKEN`/`KEY` 等（输出自动掩码） | 硬编码密钥 |
 | **Shell 历史** | 命令行中的密码参数、curl 认证、数据库连接 | 历史命令泄露 |
-| **浏览器** | Chrome/Edge 历史中的敏感 URL（后台/登录/内部系统） | 内部系统入口 |
+| **浏览器** | Chrome/Edge 保存的密码、Cookie、历史敏感 URL | 会话劫持 / 内部系统入口 |
 | **可写目录** | 启动目录、PATH 目录、公共目录（真实写入测试） | 持久化/劫持利用点 |
-| **提权建议** | 按内核/系统版本匹配已知提权 CVE | 权限提升路径参考 |
+| **提权建议** | 本机真实检查（SUID/sudo/可写服务/注册表）+ 补丁级 CVE 匹配 | 权限提升路径 |
 | **文件系统** | 配置文件、Office 文档、私钥、凭证文件 | 静态敏感信息 |
 
 ### 风险分级
@@ -621,8 +624,14 @@ Xunfeng/
 ├── output.go            # 终端输出与实时日志
 ├── ahocorasick.go       # Aho-Corasick 多模式匹配算法
 ├── patterns.go          # IP/URL/凭据对/弱口令/邮箱提取
-├── ole.go               # OLE 复合文档解析
-├── biff.go              # Excel 97-2003 (.xls) 文本提取
+├── ole.go               # OLE 复合文档解析（含 mini-stream/DIFAT）
+├── biff.go              # Excel 97-2003 (.xls) 文本提取（含 CONTINUE 记录）
+├── doc.go               # Word 97-2003 (.doc) FIB/piece table 文本提取
+├── pdf.go               # PDF 文本流提取
+├── archive.go           # ZIP 解包内容扫描
+├── browser_creds*.go    # 浏览器密码/Cookie 提取（DPAPI/Keychain）
+├── creds_extract.go     # 凭证文件内容提取（SSH/AWS/K8s/Docker/Git）
+├── antidebug_*.go       # 平台反调试检测
 ├── perms.go             # 可写可执行目录检测
 ├── privesc*.go          # 提权漏洞建议
 ├── privilege_*.go       # 平台权限信息
@@ -650,7 +659,7 @@ Xunfeng/
 | 特性 | 说明 |
 |:----:|:-----|
 | **沙箱检测** | 检测虚拟机/沙箱（CPU 核数、内存、运行时间、进程数） |
-| **调试检测** | 检测 gdb/lldb/strace 等调试器（仅 Linux/macOS） |
+| **调试检测** | Windows：IsDebuggerPresent/远程调试；Linux/macOS：调试器进程、TracerPid、P_TRACED |
 | **随机扫描** | 打乱根目录扫描顺序 |
 | **延迟模式** | `-s` 参数增加每个目录条目的操作间隔 |
 
@@ -664,10 +673,13 @@ Xunfeng/
 默认发布的二进制未编译 YARA 支持（避免 libyara 依赖）。需自行 `go build -tags yara` 编译，详见[启用 YARA](#启用-yara可选)。
 
 **Q: 为什么超过 10MB 的文件没被扫描？**
-内置安全阈值：>10MB 的文件跳过内容扫描，单文件最多读前 512KB/5000 行，防止大文件拖垮扫描速度。压缩包（zip/rar/7z）按类型标记路径但不解包扫描。
+内置安全阈值：>10MB 的文件跳过内容扫描，单文件最多读前 512KB/5000 行，防止大文件拖垮扫描速度。`.zip` 会解包扫描文本成员（单成员 ≤5MB、总量 ≤32MB 防 zip bomb）；`.rar`/`.7z` 按类型标记路径但不解包。
 
 **Q: macOS 上扫不到浏览器数据？**
-需要授予终端「完全磁盘访问权限」，并先关闭浏览器释放 SQLite 锁。
+需要授予终端「完全磁盘访问权限」，并先关闭浏览器释放 SQLite 锁。注意：解密保存的密码会触发 **Keychain 授权弹窗**（目标用户可见），隐匿场景请加 `-skip-cred-decrypt` 只扫历史。
+
+**Q: 报告里的密码为什么打了星号？**
+默认掩码输出（审计场景防二次泄露）。红队场景需要明文凭证时加 `-show-secrets`。
 
 **Q: Windows 上为什么提示沙箱就退出了？**
 程序检测到 CPU < 2 核 / 内存 < 2GB / 开机 < 120 秒 / 进程数 < 30 会判定为沙箱。虚拟机里调试请加 `-skip-sandbox`。
@@ -711,6 +723,28 @@ Xunfeng/
 ---
 
 ## 📜 更新日志
+
+### v4.0.0 (2026-09) —— 主机敏感信息收集工具
+
+**新特性**
+- 浏览器凭证提取：Chrome/Edge 保存的密码与 Cookie（Windows DPAPI / macOS Keychain / Linux）
+- 凭证文件内容提取：SSH 私钥/公钥、AWS credentials、kubeconfig、Docker auth、git-credentials（报告自动掩码）
+- 本地提权真实检查：SUID/GTFOBins、sudo -l、可写系统文件、cron、NFS no_root_squash、AlwaysInstallElevated、可写服务路径
+- CVE 补丁级匹配：Windows 读取 UBR、macOS 按 sw_vers 版本、Linux 补全 PwnKit/Samedit/GameOverlay 命中逻辑
+- PDF 文本流提取（FlateDecode + Tj/TJ 操作符）
+- ZIP 解包内容扫描（防 zip bomb）
+- .doc 自研 FIB + piece table 解析，不再依赖外部工具
+- `-nodir` 完整扫描模式：不排除任何目录
+- `-show-secrets` 明文输出开关（默认掩码）与 `-skip-cred-decrypt` 跳过浏览器解密（规避 macOS Keychain 弹窗）
+- Windows 反调试真实实现（IsDebuggerPresent / CheckRemoteDebuggerPresent）
+
+**修复**
+- xlsx 共享字符串索引未替换导致文本单元格扫不到
+- xls SST 跨 CONTINUE 记录断裂；OLE 支持 mini-stream 与 DIFAT 链
+- 网络扫描 `172.` 前缀误排公网地址（改用标准库私网判断）
+- 默认排除目录过度（`.git`/`tmp`/`logs`/`ProgramData`/`/var/lib`/其他用户家目录等高价值位置已纳入扫描）
+- 默认构建传 `-yara-rules` 时静默无效，现在会明确提示需 `-tags yara` 编译
+- Dirty COW 内核区间遗漏 3.10~3.19
 
 ### v3.0.0 (2026-07)
 

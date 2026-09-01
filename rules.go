@@ -88,11 +88,13 @@ var (
 		".gradle": true, ".sbt": true, ".tf": true, ".tfvars": true,
 	}
 
-	// officeExtensions - Office文档
+	// officeExtensions - 需要专用解析器的文档/容器格式
 	officeExtensions = map[string]bool{
 		".docx": true, ".xlsx": true,
 		".doc": true, ".xls": true, // 旧版二进制格式
 		".pptx": true, ".ppt": true, // PPT 文档
+		".pdf": true, // PDF 文本流提取
+		".zip": true, // zip 解包后扫描文本成员
 	}
 
 	// nonScanExtensions - 敏感类型(直接报告，不扫描内容)
@@ -120,7 +122,7 @@ var (
 		".ovpn": true, ".tblk": true, ".conf": false, // VPN
 		// 备份文件 (高价值)
 		".bak": true, ".backup": true, ".old": true, ".orig": true,
-		".sql.gz": true, ".tar.gz": true, ".zip": true, ".rar": true, ".7z": true,
+		".sql.gz": true, ".tar.gz": true, ".rar": true, ".7z": true,
 		".war": true, ".ear": true, ".jar": true, // Java包可能含配置
 		// 日志文件
 		".log": false, // 日志扫描内容

@@ -18,6 +18,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"runtime"
+	"strconv"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -326,8 +327,17 @@ func printSystemInfo() {
 	// 提权建议
 	if !isPrivileged() {
 		consolePrintf("%s %s %s", yellow("┌"), white("PRIVILEGE ESCALATION"), yellow("────────────────────────┐"))
+
+		// 本机真实配置检查（SUID/sudo/可写服务/补丁级 CVE 等）
+		checks := RunLocalPrivescChecks()
+		for _, f := range checks {
+			consolePrintf("%s %s%s", yellow("│"), red("⚠ "), f.Title+": "+f.Detail)
+			writeLiveLog(fmt.Sprintf("[PRIVESC-CHECK] %s: %s", f.Title, f.Detail))
+			globalReporter.AddFinding("PrivescCheck", f.Title, f.Category, 0, f.Detail)
+		}
+
 		exploits := getPrivilegeEscalationExploits()
-		if len(exploits) == 0 {
+		if len(exploits) == 0 && len(checks) == 0 {
 			consolePrintf("%s %s", yellow("│"), cyan("ℹ 未匹配到已知提权漏洞，建议运行 PEAS 工具进行自动化枚举"))
 		} else {
 			for _, exp := range exploits {
@@ -365,23 +375,10 @@ func checkSandbox() bool {
 	return false
 }
 
+// antiDebug 检测调试器：Windows 用 IsDebuggerPresent/CheckRemoteDebuggerPresent，
+// Unix 用进程名 + TracerPid/P_TRACED 检查（实现见 antidebug_*.go）
 func antiDebug() bool {
-	if runtime.GOOS == "windows" {
-		return false
-	}
-	debuggers := []string{"lldb", "gdb", "strace", "ltrace", "dtrace"}
-	procs, _ := process.Processes()
-	for _, p := range procs {
-		if name, _ := p.Name(); name != "" {
-			nameLower := strings.ToLower(name)
-			for _, d := range debuggers {
-				if strings.Contains(nameLower, d) {
-					return true
-				}
-			}
-		}
-	}
-	return false
+	return debuggerDetected()
 }
 
 // ==================== 工具函数 ====================
@@ -425,8 +422,35 @@ func initExclusions(noDir bool) {
 	}
 }
 
-func truncate(s string, maxLen int) string {
-	s = strings.TrimSpace(s)
+// maskSecret 掩码敏感值：短值全掩码，长值保留前 4 后 2
+// -show-secrets 模式下返回明文
+func maskSecret(s string) string {
+	if showSecrets {
+		return s
+	}
+	r := []rune(s)
+	if len(r) <= 8 {
+		return "***"
+	}
+	return string(r[:4]) + "***" + string(r[len(r)-2:])
+}
+
+// reportCredentialContent 提取凭证文件内容并以掩码形式上报告警
+func reportCredentialContent(path string) {
+	for _, item := range ExtractCredentialContent(path) {
+		val := item.Value
+		// 秘密值掩码（AWS 密钥/Kube token/Docker/Git 凭证）；
+		// 结构信息（私钥头、公钥注释、集群地址）不掩码
+		switch item.Kind {
+		case "AWS", "Kube用户", "Docker", "Git":
+			val = maskSecret(val)
+		}
+		atomic.AddUint64(&credentialHits, 1)
+		globalReporter.PrintFinding("CredentialContent", item.Kind+":"+item.Summary, path, 0, truncate(val, 70))
+	}
+}
+
+func truncate(s string, maxLen int) string {s = strings.TrimSpace(s)
 	var b strings.Builder
 	b.Grow(maxLen + 4)
 	lastSpace := false
@@ -475,7 +499,14 @@ func extractDocText(path string) (string, error) {
 		}
 	}
 
-	// 方法3: 从 OLE WordDocument 流提取文本
+	// 方法3: 自研 FIB + piece table 解析（doc.go）
+	if data, err := os.ReadFile(path); err == nil && len(data) > 0 && len(data) <= 32*1024*1024 {
+		if text := ExtractDocText(data); text != "" {
+			return text, nil
+		}
+	}
+
+	// 方法4: 从 OLE WordDocument 流提取文本（strings 兜底）
 	if r, err := newOLEReader(path); err == nil {
 		if stream, err := r.findStream("WordDocument"); err == nil && len(stream) > 0 {
 			var result strings.Builder
@@ -485,7 +516,7 @@ func extractDocText(path string) (string, error) {
 			return result.String(), nil
 		}
 	}
-	// 方法4: 退回到原始字节提取
+	// 方法5: 退回到原始字节提取
 	return extractOfficeBinaryText(path)
 }
 
@@ -812,6 +843,7 @@ func extractSheetText(data []byte, sharedStrings []string) string {
 	var result strings.Builder
 	decoder := xml.NewDecoder(bytes.NewReader(data))
 	var inV bool
+	sharedCell := false // 当前单元格是否为共享字符串（<c t="s">）
 	for {
 		t, err := decoder.Token()
 		if err != nil {
@@ -819,12 +851,31 @@ func extractSheetText(data []byte, sharedStrings []string) string {
 		}
 		switch se := t.(type) {
 		case xml.StartElement:
-			if se.Name.Local == "v" {
+			switch se.Name.Local {
+			case "c":
+				sharedCell = false
+				for _, attr := range se.Attr {
+					if attr.Name.Local == "t" && attr.Value == "s" {
+						sharedCell = true
+						break
+					}
+				}
+			case "v":
 				inV = true
 			}
 		case xml.CharData:
-			if inV {
-				result.WriteString(string(se))
+			if !inV {
+				continue
+			}
+			text := string(se)
+			if sharedCell {
+				// 共享字符串单元格：<v> 内容是 sharedStrings 的索引
+				if idx, err := strconv.Atoi(strings.TrimSpace(text)); err == nil && idx >= 0 && idx < len(sharedStrings) {
+					result.WriteString(sharedStrings[idx])
+					result.WriteString(" ")
+				}
+			} else {
+				result.WriteString(text)
 				result.WriteString(" ")
 			}
 		case xml.EndElement:
@@ -1080,6 +1131,10 @@ func scanOfficeFile(path, ext string) {
 		content, err = extractPptxText(path)
 	case ".ppt":
 		content, err = extractPptText(path)
+	case ".pdf":
+		content, err = extractPDFContent(path)
+	case ".zip":
+		content, err = extractZipContent(path)
 	}
 	if err != nil || content == "" {
 		return
@@ -1103,6 +1158,35 @@ func scanOfficeFile(path, ext string) {
 
 	// 补充模式扫描：IP、URL、凭据对、弱口令、邮箱
 	scanContentPatterns(path, content)
+}
+
+// extractPDFContent 提取 PDF 文本流内容用于敏感信息匹配
+func extractPDFContent(path string) (string, error) {
+	info, err := os.Stat(path)
+	if err != nil || info.Size() == 0 || info.Size() > maxFileSize {
+		return "", err
+	}
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return "", err
+	}
+	return ExtractPDFText(data), nil
+}
+
+// extractZipContent 解包 zip 并拼接文本成员内容用于敏感信息匹配
+func extractZipContent(path string) (string, error) {
+	entries := ExtractArchiveText(path, 32*1024*1024)
+	if len(entries) == 0 {
+		return "", nil
+	}
+	var content strings.Builder
+	for _, e := range entries {
+		content.WriteString("\n#== zip 成员: ")
+		content.WriteString(e.Name)
+		content.WriteString(" ==#\n")
+		content.Write(e.Text)
+	}
+	return content.String(), nil
 }
 
 // extractPptxText 从 .pptx 文件提取文本
@@ -1651,8 +1735,8 @@ func scanNetworkConnections() {
 			}
 		} else if conn.Status == "ESTABLISHED" && conn.Raddr.IP != "" {
 			ip := conn.Raddr.IP
-			if ip == "127.0.0.1" || ip == "::1" || strings.HasPrefix(ip, "192.168.") ||
-				strings.HasPrefix(ip, "10.") || strings.HasPrefix(ip, "172.") {
+			// 用标准库判断内网/回环地址，避免前缀匹配误排公网 172.x
+			if parsed := net.ParseIP(ip); parsed != nil && (parsed.IsLoopback() || parsed.IsPrivate()) {
 				continue
 			}
 			if desc, ok := suspiciousPorts[conn.Raddr.Port]; ok {
@@ -1683,6 +1767,7 @@ func scanCredentials() {
 		if _, err := os.Stat(keyPath); err == nil {
 			atomic.AddUint64(&credentialHits, 1)
 			printSuccess("SSHKey         %-20s  %s", magenta("PrivateKey"), keyPath)
+			reportCredentialContent(keyPath)
 		}
 	}
 
@@ -1696,6 +1781,7 @@ func scanCredentials() {
 		if _, err := os.Stat(path); err == nil {
 			atomic.AddUint64(&credentialHits, 1)
 			printSuccess("CloudCred      %-20s  %s", magenta(name), path)
+			reportCredentialContent(path)
 		}
 	}
 
@@ -1705,6 +1791,7 @@ func scanCredentials() {
 		if bytes.Contains(content, []byte("auth")) {
 			atomic.AddUint64(&credentialHits, 1)
 			printSuccess("CloudCred      %-20s  %s", magenta("Docker"), dockerConfig)
+			reportCredentialContent(dockerConfig)
 		}
 	}
 
@@ -1713,6 +1800,7 @@ func scanCredentials() {
 	if _, err := os.Stat(gitCreds); err == nil {
 		atomic.AddUint64(&credentialHits, 1)
 		printSuccess("GitCred        %-20s  %s", magenta("Credentials"), gitCreds)
+		reportCredentialContent(gitCreds)
 	}
 }
 
@@ -1804,6 +1892,25 @@ func scanBrowserData() {
 			break
 		}
 	}
+
+	// 提取浏览器保存的密码与 Cookie（browser_creds.go）
+	// -skip-cred-decrypt 跳过：macOS 上解密会触发 Keychain 授权弹窗，隐匿场景需要关闭
+	if !skipCredDecrypt {
+		creds, cookies, _ := ExtractBrowserCredentials()
+		for _, c := range creds {
+			globalReporter.PrintFinding("BrowserCred", c.Browser+"/"+c.Profile, c.URL, 0,
+				truncate(c.Username+":"+maskSecret(c.Password), 70))
+		}
+		// Cookie 数量可能很大，报告上限由 maxPerCategory 控制，控制台只打汇总
+		for _, ck := range cookies {
+			globalReporter.AddFinding("BrowserCookie", ck.Browser+"/"+ck.Profile, ck.Host, 0,
+				truncate(ck.Name+"="+maskSecret(ck.Value), 70))
+		}
+		if !silent && (len(creds) > 0 || len(cookies) > 0) {
+			consolePrintf("  [%s] 浏览器凭证: %d 条密码, %d 条 Cookie（详见报告）",
+				green("+"), len(creds), len(cookies))
+		}
+	}
 }
 
 func scanBrowserHistory(browser, dbPath string) {
@@ -1865,7 +1972,7 @@ func scanEnvironment() {
 		for _, sensitive := range sensitiveKeys {
 			if strings.Contains(keyUpper, sensitive) {
 				masked := value
-				if len(value) > 12 {
+				if !showSecrets && len(value) > 12 {
 					masked = value[:4] + "****" + value[len(value)-4:]
 				}
 				atomic.AddUint64(&credentialHits, 1)
@@ -1907,6 +2014,8 @@ func parseConfig() *Config {
 	flag.StringVar(&cfg.YaraRulesPath, "yara-rules", "", "YARA rule file/directory (requires yara build tag)")
 	flag.BoolVar(&cfg.Jiwa, "jiwa", false, "稽核模式：显示详细进度条和阶段信息")
 	flag.BoolVar(&cfg.NoDir, "nodir", false, "完整扫描：不排除任何目录")
+	flag.BoolVar(&showSecrets, "show-secrets", false, "报告中输出明文敏感值（默认掩码）")
+	flag.BoolVar(&skipCredDecrypt, "skip-cred-decrypt", false, "跳过浏览器密码/Cookie 解密（避免 macOS Keychain 弹窗）")
 	flag.Parse()
 
 	// 根据格式调整输出文件扩展名

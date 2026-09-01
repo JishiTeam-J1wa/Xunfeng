@@ -5,7 +5,7 @@
 
 set -e
 
-VERSION="3.0.0"
+VERSION="4.0.0"
 OUTPUT_DIR="build_obfuscated"
 APP_NAME="xunfeng"
 
